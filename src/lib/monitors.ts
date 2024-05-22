@@ -24,3 +24,8 @@ export const getProjectStatistics = async (id: number) => {
   const response = await api.get(`/monitors/${id}/statistic`);
   return response.data;
 };
+
+export const retrieveProjectKey = async (id: number) => {
+  const response = await api.post(`/monitors/${id}/key`);
+  return response.data;
+};

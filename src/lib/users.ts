@@ -17,6 +17,7 @@ export const getCurrentUser = async () => {
 
 export const loginUser = async (username: string, password: string) => {
   const responses = await api.post("/users/login", { username, password });
+  console.log(responses.data);
   return responses.data;
 };
 

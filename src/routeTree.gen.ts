@@ -18,6 +18,7 @@ import { Route as IndexImport } from './routes/index'
 import { Route as MonitorIdImport } from './routes/monitor.$id'
 import { Route as MonitorIdIndexImport } from './routes/monitor.$id/index'
 import { Route as MonitorIdLogsImport } from './routes/monitor.$id/logs'
+import { Route as MonitorIdAuthenticationImport } from './routes/monitor.$id/authentication'
 
 // Create/Update Routes
 
@@ -53,6 +54,11 @@ const MonitorIdIndexRoute = MonitorIdIndexImport.update({
 
 const MonitorIdLogsRoute = MonitorIdLogsImport.update({
   path: '/logs',
+  getParentRoute: () => MonitorIdRoute,
+} as any)
+
+const MonitorIdAuthenticationRoute = MonitorIdAuthenticationImport.update({
+  path: '/authentication',
   getParentRoute: () => MonitorIdRoute,
 } as any)
 
@@ -95,6 +101,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MonitorIdImport
       parentRoute: typeof rootRoute
     }
+    '/monitor/$id/authentication': {
+      id: '/monitor/$id/authentication'
+      path: '/authentication'
+      fullPath: '/monitor/$id/authentication'
+      preLoaderRoute: typeof MonitorIdAuthenticationImport
+      parentRoute: typeof MonitorIdImport
+    }
     '/monitor/$id/logs': {
       id: '/monitor/$id/logs'
       path: '/logs'
@@ -120,6 +133,7 @@ export const routeTree = rootRoute.addChildren({
   MonitorsRoute,
   RegisterRoute,
   MonitorIdRoute: MonitorIdRoute.addChildren({
+    MonitorIdAuthenticationRoute,
     MonitorIdLogsRoute,
     MonitorIdIndexRoute,
   }),

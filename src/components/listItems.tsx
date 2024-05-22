@@ -5,7 +5,7 @@ import ListItemText from "@mui/material/ListItemText";
 import ListSubheader from "@mui/material/ListSubheader";
 import DashboardIcon from "@mui/icons-material/Dashboard";
 import AssignmentIcon from "@mui/icons-material/Assignment";
-import { Archive, MonitorHeart, Search } from "@mui/icons-material";
+import { Archive, Login, MonitorHeart, Search } from "@mui/icons-material";
 import { Link } from "@tanstack/react-router";
 
 export const mainListItems = (
@@ -68,6 +68,19 @@ export const monitorTabs = (id: number) => (
           <Archive />
         </ListItemIcon>
         <ListItemText primary="Logs" />
+      </ListItemButton>
+    </Link>
+
+    <Link
+      to="/monitor/$id/authentication"
+      params={{ id: id.toString() }}
+      style={{ color: "white", textDecoration: "none" }}
+    >
+      <ListItemButton>
+        <ListItemIcon>
+          <Login />
+        </ListItemIcon>
+        <ListItemText primary="Authentication" />
       </ListItemButton>
     </Link>
   </React.Fragment>

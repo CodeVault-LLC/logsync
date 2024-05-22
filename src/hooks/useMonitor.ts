@@ -5,6 +5,7 @@ import {
   getProject,
   getProjectStatistics,
   getProjects,
+  retrieveProjectKey,
 } from "../lib/monitors";
 import { Monitor } from "../types/monitor";
 import { LogStatistic } from "../types/log";
@@ -47,5 +48,12 @@ export const useFavoriteProject = (id: number) => {
   return useMutation({
     mutationKey: ["favoriteProject"],
     mutationFn: () => favoriteProject(id),
+  });
+};
+
+export const useMonitorKey = (id: number) => {
+  return useMutation({
+    mutationKey: ["monitor" + id + "key"],
+    mutationFn: () => retrieveProjectKey(id),
   });
 };
