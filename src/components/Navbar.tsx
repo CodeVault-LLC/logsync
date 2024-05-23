@@ -4,6 +4,7 @@ import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import { Link } from "@tanstack/react-router";
 
 const drawerWidth: number = 240;
 type NavbarProps = {
@@ -53,15 +54,23 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
         >
           <MenuIcon />
         </IconButton>
-        <Typography
-          component="h1"
-          variant="h6"
-          color="inherit"
-          noWrap
-          sx={{ flexGrow: 1 }}
+        <Link
+          to="/"
+          style={{
+            color: "inherit",
+            textDecoration: "none",
+          }}
         >
-          LogiSync
-        </Typography>
+          <Typography
+            component="h1"
+            variant="h6"
+            color="inherit"
+            noWrap
+            sx={{ flexGrow: 1 }}
+          >
+            LogiSync
+          </Typography>
+        </Link>
         <IconButton color="inherit">
           <Badge badgeContent={4} color="secondary">
             <NotificationsIcon />
