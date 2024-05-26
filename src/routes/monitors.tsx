@@ -33,7 +33,7 @@ const Monitors = () => {
   const [createNew, setCreateNew] = useState(false);
   const [selectedMonitor, setSelectedMonitor] = useState<number | null>(null);
 
-  const { mutate: favorite } = useFavoriteProject(selectedMonitor);
+  const { mutate: favorite } = useFavoriteProject(selectedMonitor as number);
 
   const { data } = useProjects();
 

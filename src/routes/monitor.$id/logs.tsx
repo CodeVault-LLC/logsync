@@ -19,14 +19,10 @@ import React, { useState } from "react";
 import { useLogs } from "../../hooks/useLog";
 import { formatDate } from "../../lib/data";
 import { Log } from "../../types/log";
-import {
-  Close,
-  Download,
-  Functions,
-  GraphicEq,
-  Search,
-} from "@mui/icons-material";
+import { Close, Download, GraphicEq, Search } from "@mui/icons-material";
 import { CopyBlock, nord } from "react-code-blocks";
+import { useCurrentUser } from "../../hooks/useUser";
+import { CommentField } from "../../components/CommentField";
 
 const Logs: React.FC = () => {
   const { id }: { id: number } = useParams({ strict: false });
@@ -34,6 +30,7 @@ const Logs: React.FC = () => {
   const [clickedRow, setClickedRow] = useState({} as Log);
 
   const { data, isLoading } = useLogs(id);
+  const { data: user } = useCurrentUser();
 
   return (
     <Box>
@@ -137,7 +134,7 @@ const Logs: React.FC = () => {
                   }}
                 >
                   <Chip
-                    label={clickedRow.Type}
+                    label={clickedRow.Type?.toUpperCase()}
                     color={clickedRow.Type === "error" ? "error" : "success"}
                     variant="filled"
                     sx={{ borderRadius: 0.5 }}
@@ -173,22 +170,16 @@ const Logs: React.FC = () => {
               <Grid container>
                 <Grid item xs={6}>
                   <Typography variant="body1">SOURCE</Typography>
-                  <Typography variant="body2">{clickedRow.FileName}</Typography>
+                  <Typography variant="body2">
+                    {clickedRow.LogInformation?.Source || "N/A"}
+                  </Typography>
                 </Grid>
 
                 <Grid item xs={6}>
                   <Typography variant="body1">FUNCTION</Typography>
-                  <Grid container>
-                    <Grid item xs={1}>
-                      <Functions />
-                    </Grid>
-
-                    <Grid item xs={11}>
-                      <Typography variant="body2">
-                        {clickedRow.FunctionName}
-                      </Typography>
-                    </Grid>
-                  </Grid>
+                  <Typography variant="body2">
+                    {clickedRow.LogInformation?.Function || "N/A"}
+                  </Typography>
                 </Grid>
               </Grid>
 
@@ -199,15 +190,25 @@ const Logs: React.FC = () => {
 
               <Box sx={{ marginTop: 2 }}>
                 <CopyBlock
-                  text={clickedRow.StackTrace}
+                  text={clickedRow.LogInformation?.StackTrace || "N/A"}
                   theme={nord}
+                  codeBlock
                   language={"text"}
                   showLineNumbers={false}
                 />
               </Box>
 
+              {clickedRow.LogInformation?.Solution && (
+                <Box sx={{ marginTop: 2 }}>
+                  <Typography variant="h6">Solution</Typography>
+                  <Typography variant="body1">
+                    {clickedRow.LogInformation?.Solution}
+                  </Typography>
+                </Box>
+              )}
+
               <Box sx={{ marginTop: 2 }}>
-                <Typography variant="body2">Error Kind</Typography>
+                <Typography variant="h6">Error Kind</Typography>
 
                 <Box
                   sx={{
@@ -218,7 +219,7 @@ const Logs: React.FC = () => {
                   }}
                 >
                   <Link href="https://google.com" target="_blank">
-                    Type Error
+                    {clickedRow.LogInformation?.ErrorType}
                   </Link>
 
                   <ButtonGroup>
@@ -227,13 +228,21 @@ const Logs: React.FC = () => {
                         <Search />
                       </IconButton>
                     </Tooltip>
-                    <Tooltip title="Similar errors" arrow>
+                    <Tooltip title="Similar logs" arrow>
                       <IconButton>
                         <GraphicEq />
                       </IconButton>
                     </Tooltip>
                   </ButtonGroup>
                 </Box>
+              </Box>
+
+              <Box sx={{ marginTop: 4 }}>
+                <CommentField
+                  Username={user?.Username || ""}
+                  LogID={clickedRow?.ID?.toString()}
+                  Comments={clickedRow?.Comments || []}
+                />
               </Box>
             </Box>
           </Drawer>

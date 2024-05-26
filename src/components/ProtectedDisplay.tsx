@@ -25,7 +25,6 @@ export const ProtectedDisplay: React.FC<ProtectedDisplayProps> = ({
           alignItems: "center",
           justifyContent: "center",
 
-          padding: 4,
           borderRadius: 2,
           boxShadow: 3,
         }}
