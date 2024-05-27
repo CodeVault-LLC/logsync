@@ -39,7 +39,7 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
     <AppBar position="absolute" open={open}>
       <Toolbar
         sx={{
-          pr: "24px", // keep right padding when drawer closed
+          pr: "24px",
         }}
       >
         <IconButton
@@ -59,15 +59,11 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
           style={{
             color: "inherit",
             textDecoration: "none",
+            flexGrow: 1,
+            flexWrap: "nowrap",
           }}
         >
-          <Typography
-            component="h1"
-            variant="h6"
-            color="inherit"
-            noWrap
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography component="h1" variant="h6" color="inherit">
             LogiSync
           </Typography>
         </Link>

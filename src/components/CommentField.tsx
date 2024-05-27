@@ -3,6 +3,8 @@ import { Box, Typography, Avatar } from "@mui/material";
 import { RichTextEditor } from "./Editor/Editor";
 import { useCreateComment } from "../hooks/useComment";
 import { CommentResponse } from "../types/comment";
+import { EditorView } from "@tiptap/pm/view";
+import { Editor } from "@tiptap/react";
 
 interface CommentFieldProps {
   Username: string;
@@ -16,6 +18,7 @@ export const CommentField: React.FC<CommentFieldProps> = ({
   Comments,
 }) => {
   const [comment, setComment] = useState("");
+  console.log(comment);
 
   const { mutate } = useCreateComment({
     Username,
@@ -25,7 +28,6 @@ export const CommentField: React.FC<CommentFieldProps> = ({
 
   const onCommentSubmit = () => {
     mutate();
-    setComment("");
   };
 
   return (
@@ -54,10 +56,8 @@ export const CommentField: React.FC<CommentFieldProps> = ({
             alignItems: "center",
           }}
         >
-          <Avatar>{comment.Comment[0]}</Avatar>
-          <Box>
-            <Typography variant="body1">{comment.Comment}</Typography>
-          </Box>
+          <Avatar>{Username[0]}</Avatar>
+          <div dangerouslySetInnerHTML={{ __html: comment.Comment }}></div>
         </Box>
       ))}
     </Box>
