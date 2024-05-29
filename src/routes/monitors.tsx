@@ -1,5 +1,6 @@
 import { Add, MoreVert, OpenInFull, Save, Share } from "@mui/icons-material";
 import {
+  Alert,
   Avatar,
   Box,
   Card,
@@ -7,6 +8,7 @@ import {
   CardContent,
   CardHeader,
   Chip,
+  Divider,
   Grid,
   IconButton,
   Menu,
@@ -39,7 +41,7 @@ const Monitors = () => {
 
   return (
     <ProtectedDisplay>
-      <Box sx={{ padding: 2, marginBottom: 2 }}>
+      <Box>
         <Grid container spacing={3}>
           <Grid item xs={4}>
             <Typography variant="h4">Monitors</Typography>
@@ -58,11 +60,12 @@ const Monitors = () => {
       </Box>
 
       <CreateProject createNew={createNew} setCreateNew={setCreateNew} />
+      <Divider sx={{ my: 2 }} />
 
       <Grid container spacing={3}>
         {data && data.length === 0 && (
           <Grid item xs={12}>
-            <Typography variant="h6">No monitors found</Typography>
+            <Alert severity="info">No monitors found</Alert>
           </Grid>
         )}
 

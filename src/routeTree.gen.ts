@@ -17,8 +17,11 @@ import { Route as LoginImport } from './routes/login'
 import { Route as IndexImport } from './routes/index'
 import { Route as MonitorIdImport } from './routes/monitor.$id'
 import { Route as MonitorIdIndexImport } from './routes/monitor.$id/index'
+import { Route as MonitorIdSettingsImport } from './routes/monitor.$id/settings'
 import { Route as MonitorIdLogsImport } from './routes/monitor.$id/logs'
-import { Route as MonitorIdAuthenticationImport } from './routes/monitor.$id/authentication'
+import { Route as MonitorIdSettingsGeneralImport } from './routes/monitor.$id/settings/general'
+import { Route as MonitorIdSettingsAuthenticationImport } from './routes/monitor.$id/settings/authentication'
+import { Route as MonitorIdSettingsAdvancedImport } from './routes/monitor.$id/settings/advanced'
 
 // Create/Update Routes
 
@@ -52,14 +55,30 @@ const MonitorIdIndexRoute = MonitorIdIndexImport.update({
   getParentRoute: () => MonitorIdRoute,
 } as any)
 
+const MonitorIdSettingsRoute = MonitorIdSettingsImport.update({
+  path: '/settings',
+  getParentRoute: () => MonitorIdRoute,
+} as any)
+
 const MonitorIdLogsRoute = MonitorIdLogsImport.update({
   path: '/logs',
   getParentRoute: () => MonitorIdRoute,
 } as any)
 
-const MonitorIdAuthenticationRoute = MonitorIdAuthenticationImport.update({
-  path: '/authentication',
-  getParentRoute: () => MonitorIdRoute,
+const MonitorIdSettingsGeneralRoute = MonitorIdSettingsGeneralImport.update({
+  path: '/general',
+  getParentRoute: () => MonitorIdSettingsRoute,
+} as any)
+
+const MonitorIdSettingsAuthenticationRoute =
+  MonitorIdSettingsAuthenticationImport.update({
+    path: '/authentication',
+    getParentRoute: () => MonitorIdSettingsRoute,
+  } as any)
+
+const MonitorIdSettingsAdvancedRoute = MonitorIdSettingsAdvancedImport.update({
+  path: '/advanced',
+  getParentRoute: () => MonitorIdSettingsRoute,
 } as any)
 
 // Populate the FileRoutesByPath interface
@@ -101,18 +120,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MonitorIdImport
       parentRoute: typeof rootRoute
     }
-    '/monitor/$id/authentication': {
-      id: '/monitor/$id/authentication'
-      path: '/authentication'
-      fullPath: '/monitor/$id/authentication'
-      preLoaderRoute: typeof MonitorIdAuthenticationImport
-      parentRoute: typeof MonitorIdImport
-    }
     '/monitor/$id/logs': {
       id: '/monitor/$id/logs'
       path: '/logs'
       fullPath: '/monitor/$id/logs'
       preLoaderRoute: typeof MonitorIdLogsImport
+      parentRoute: typeof MonitorIdImport
+    }
+    '/monitor/$id/settings': {
+      id: '/monitor/$id/settings'
+      path: '/settings'
+      fullPath: '/monitor/$id/settings'
+      preLoaderRoute: typeof MonitorIdSettingsImport
       parentRoute: typeof MonitorIdImport
     }
     '/monitor/$id/': {
@@ -121,6 +140,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/monitor/$id/'
       preLoaderRoute: typeof MonitorIdIndexImport
       parentRoute: typeof MonitorIdImport
+    }
+    '/monitor/$id/settings/advanced': {
+      id: '/monitor/$id/settings/advanced'
+      path: '/advanced'
+      fullPath: '/monitor/$id/settings/advanced'
+      preLoaderRoute: typeof MonitorIdSettingsAdvancedImport
+      parentRoute: typeof MonitorIdSettingsImport
+    }
+    '/monitor/$id/settings/authentication': {
+      id: '/monitor/$id/settings/authentication'
+      path: '/authentication'
+      fullPath: '/monitor/$id/settings/authentication'
+      preLoaderRoute: typeof MonitorIdSettingsAuthenticationImport
+      parentRoute: typeof MonitorIdSettingsImport
+    }
+    '/monitor/$id/settings/general': {
+      id: '/monitor/$id/settings/general'
+      path: '/general'
+      fullPath: '/monitor/$id/settings/general'
+      preLoaderRoute: typeof MonitorIdSettingsGeneralImport
+      parentRoute: typeof MonitorIdSettingsImport
     }
   }
 }
@@ -133,8 +173,12 @@ export const routeTree = rootRoute.addChildren({
   MonitorsRoute,
   RegisterRoute,
   MonitorIdRoute: MonitorIdRoute.addChildren({
-    MonitorIdAuthenticationRoute,
     MonitorIdLogsRoute,
+    MonitorIdSettingsRoute: MonitorIdSettingsRoute.addChildren({
+      MonitorIdSettingsAdvancedRoute,
+      MonitorIdSettingsAuthenticationRoute,
+      MonitorIdSettingsGeneralRoute,
+    }),
     MonitorIdIndexRoute,
   }),
 })
