@@ -11,4 +11,6 @@ export interface CommentResponse {
 
   Comment: string;
   IsPinned: boolean;
+
+  Username: string;
 }

@@ -1,0 +1,26 @@
+.comment-content {
+  margin-top: 8px;
+  white-space: pre-wrap;
+}
+
+.comment-content h1,
+.comment-content h2,
+.comment-content h3 {
+  margin: 0;
+}
+
+.comment-content p {
+  margin: 0 0 8px;
+}
+
+.comment-content ul,
+.comment-content ol {
+  padding-left: 20px;
+}
+
+.comment-content pre {
+  background: #f5f5f5;
+  padding: 8px;
+  border-radius: 4px;
+  overflow: auto;
+}

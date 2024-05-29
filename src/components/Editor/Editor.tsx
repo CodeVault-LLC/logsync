@@ -1,4 +1,10 @@
-import { Editor, EditorContent, useEditor } from "@tiptap/react";
+import {
+  Editor,
+  EditorContent,
+  Extension,
+  RawCommands,
+  useEditor,
+} from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Box, IconButton, Tooltip, Paper } from "@mui/material";
 import {
@@ -12,6 +18,14 @@ import {
   StrikethroughS,
 } from "@mui/icons-material";
 import "./editor.css";
+
+declare module "@tiptap/core" {
+  interface Commands<ReturnType> {
+    CustomKeymap: {
+      submitCommentCommand: () => ReturnType;
+    };
+  }
+}
 
 const MenuBar = ({ editor }: { editor: Editor }) => {
   if (!editor) {
@@ -111,15 +125,27 @@ export const RichTextEditor = ({
   setContent: (content: string) => void;
   submitComment: () => void;
 }) => {
+  const CustomKeymap = Extension.create({
+    addCommands() {
+      return {
+        submitCommentCommand: () => submitComment(),
+      } as Partial<RawCommands>;
+    },
+    addKeyboardShortcuts() {
+      return {
+        "Mod-Enter": () => this.editor.commands.submitCommentCommand(),
+      };
+    },
+  });
+
   const editor = useEditor({
-    extensions: [StarterKit],
+    extensions: [StarterKit, CustomKeymap],
     content: content,
     editorProps: {
       attributes: {
         class: "editor",
       },
     },
-
     onUpdate: ({ editor }) => {
       setContent(editor.getHTML());
     },
@@ -133,15 +159,7 @@ export const RichTextEditor = ({
     <Paper elevation={3} sx={{ borderRadius: "8px", overflow: "hidden" }}>
       <MenuBar editor={editor as Editor} />
       <Box sx={{ paddingX: 1, height: "100%", width: "100%" }}>
-        <EditorContent
-          editor={editor}
-          onKeyDown={(event) => {
-            if (event.key === "Enter" && event.ctrlKey) {
-              event.preventDefault();
-              submitComment();
-            }
-          }}
-        />
+        <EditorContent editor={editor} />
       </Box>
     </Paper>
   );

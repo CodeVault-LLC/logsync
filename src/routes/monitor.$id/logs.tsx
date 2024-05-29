@@ -22,7 +22,7 @@ import { Log } from "../../types/log";
 import { Close, Download, GraphicEq, Search } from "@mui/icons-material";
 import { CopyBlock, nord } from "react-code-blocks";
 import { useCurrentUser } from "../../hooks/useUser";
-import { CommentField } from "../../components/CommentField";
+import { CommentField } from "../../components/CommentSection/CommentField";
 
 const Logs: React.FC = () => {
   const { id }: { id: number } = useParams({ strict: false });
