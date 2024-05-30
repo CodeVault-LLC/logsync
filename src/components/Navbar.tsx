@@ -1,10 +1,22 @@
-import { Toolbar, IconButton, Typography, Badge, styled } from "@mui/material";
+import {
+  Toolbar,
+  IconButton,
+  Typography,
+  Badge,
+  styled,
+  Popper,
+  Paper,
+  List,
+  ListItem,
+} from "@mui/material";
 
 import MenuIcon from "@mui/icons-material/Menu";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
 import { Link } from "@tanstack/react-router";
+import { useNotifications } from "../hooks/useNotifications";
+import { useState } from "react";
 
 const drawerWidth: number = 240;
 type NavbarProps = {
@@ -35,6 +47,10 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+  const { data: notifications } = useNotifications();
+
   return (
     <AppBar position="absolute" open={open}>
       <Toolbar
@@ -67,11 +83,51 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
             LogiSync
           </Typography>
         </Link>
-        <IconButton color="inherit">
-          <Badge badgeContent={4} color="secondary">
+        <IconButton
+          color="inherit"
+          onClick={(event) => {
+            setAnchorEl(anchorEl ? null : event.currentTarget);
+          }}
+        >
+          <Badge badgeContent={notifications?.length || 0} color="secondary">
             <NotificationsIcon />
           </Badge>
         </IconButton>
+
+        <Popper open={Boolean(anchorEl)} anchorEl={anchorEl}>
+          <Paper>
+            <List>
+              {notifications?.map((notification) => (
+                <a
+                  href={notification.Link}
+                  style={{
+                    color: "inherit",
+                    textDecoration: "none",
+                  }}
+                >
+                  <ListItem
+                    key={notification.ID}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "flex-start",
+                      width: 300,
+                      height: "auto",
+                      padding: 2,
+                      borderBottom: "1px solid #ccc",
+
+                      color: "inherit",
+                      textDecoration: "none",
+                    }}
+                  >
+                    <Typography>{notification.Title}</Typography>
+                    <Typography>{notification.Message}</Typography>
+                  </ListItem>
+                </a>
+              ))}
+            </List>
+          </Paper>
+        </Popper>
       </Toolbar>
     </AppBar>
   );
