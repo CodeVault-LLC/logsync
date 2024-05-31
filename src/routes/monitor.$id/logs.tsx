@@ -32,6 +32,23 @@ const Logs: React.FC = () => {
   const { data, isLoading } = useLogs(id);
   const { data: user } = useCurrentUser();
 
+  const findLevelColor = (level: string) => {
+    switch (level) {
+      case "error":
+        return "#FF3838";
+      case "info":
+        return "#2DCCFF";
+      case "debug":
+        return "#A4ABB6";
+      case "warn":
+        return "#FFB302";
+      case "fatal":
+        return "purple";
+      default:
+        return "#A4ABB6";
+    }
+  };
+
   return (
     <Box>
       {isLoading && <LinearProgress />}
@@ -88,8 +105,7 @@ const Logs: React.FC = () => {
                             width: 4,
                             height: 20,
                             borderRadius: 5,
-                            backgroundColor:
-                              params.row.Type === "error" ? "red" : "green",
+                            backgroundColor: findLevelColor(params.row.Level),
                           }}
                         />
                         <span>{formatDate(params.value)}</span>
@@ -134,10 +150,12 @@ const Logs: React.FC = () => {
                   }}
                 >
                   <Chip
-                    label={clickedRow.Type?.toUpperCase()}
-                    color={clickedRow.Type === "error" ? "error" : "success"}
+                    label={clickedRow.Level?.toUpperCase()}
                     variant="filled"
-                    sx={{ borderRadius: 0.5 }}
+                    sx={{
+                      borderRadius: 0.5,
+                      backgroundColor: findLevelColor(clickedRow.Level),
+                    }}
                   />
 
                   <Typography variant="body1">

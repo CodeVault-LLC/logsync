@@ -4,7 +4,7 @@ export interface Log {
   ID: number;
   CreatedAt: string;
   UpdatedAt: string;
-  Type: string;
+  Level: string;
   Message: string;
   AssignedTo: number;
 
@@ -17,6 +17,7 @@ export interface Log {
     Solution: string;
     ErrorType: string;
     StackTrace: string;
+    Context: string;
   };
 
   Comments: CommentResponse[];
