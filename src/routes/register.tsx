@@ -1,8 +1,4 @@
-import {
-  createFileRoute,
-  redirect,
-  useRouteContext,
-} from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
@@ -21,20 +17,11 @@ export default function Register() {
   const [schema, setSchema] = React.useState(
     {} as { username: string; password: string; email: string }
   );
-  const context = useRouteContext({ strict: false });
-
   const { mutate } = useRegister(
     schema.username,
     schema.password,
     schema.email
   );
-
-  React.useEffect(() => {
-    if (context?.user) {
-      console.log("Redirecting to /");
-      context.router.navigate("/");
-    }
-  }, [context]);
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -126,9 +113,4 @@ export default function Register() {
 
 export const Route = createFileRoute("/register")({
   component: Register,
-  beforeLoad({ context }) {
-    if (context?.user) {
-      throw redirect({ to: "/" });
-    }
-  },
 });

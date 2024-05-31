@@ -5,7 +5,6 @@ import {
   Drawer,
   Grid,
   IconButton,
-  LinearProgress,
   Link,
   Paper,
   Tab,
@@ -16,44 +15,28 @@ import {
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { DataGrid } from "@mui/x-data-grid";
 import React, { useState } from "react";
-import { useLogs } from "../../hooks/useLog";
 import { formatDate } from "../../lib/data";
 import { Log } from "../../types/log";
 import { Close, Download, GraphicEq, Search } from "@mui/icons-material";
 import { CopyBlock, nord } from "react-code-blocks";
 import { useCurrentUser } from "../../hooks/useUser";
 import { CommentField } from "../../components/CommentSection/CommentField";
+import { LogsFilter } from "../../components/Logs/LogFilter";
+import { findStatusPalette } from "../../packages/status";
 
 const Logs: React.FC = () => {
   const { id }: { id: number } = useParams({ strict: false });
   const [tab, setTab] = useState("filters");
   const [clickedRow, setClickedRow] = useState({} as Log);
+  const [logs, setLogs] = useState<Log[]>([]);
 
-  const { data, isLoading } = useLogs(id);
   const { data: user } = useCurrentUser();
-
-  const findLevelColor = (level: string) => {
-    switch (level) {
-      case "error":
-        return "#FF3838";
-      case "info":
-        return "#2DCCFF";
-      case "debug":
-        return "#A4ABB6";
-      case "warn":
-        return "#FFB302";
-      case "fatal":
-        return "purple";
-      default:
-        return "#A4ABB6";
-    }
-  };
 
   return (
     <Box>
-      {isLoading && <LinearProgress />}
+      <>
+        <LogsFilter monitorId={id} setLogs={setLogs} />
 
-      {!isLoading && (
         <Box
           sx={{
             display: "flex",
@@ -65,7 +48,7 @@ const Logs: React.FC = () => {
           <Paper sx={{ padding: 2 }}>
             <Tabs
               value={tab}
-              onChange={(e, value) => setTab(value)}
+              onChange={(_, value) => setTab(value)}
               aria-label="monitor logs tabs"
               defaultValue={"filters"}
             >
@@ -80,14 +63,14 @@ const Logs: React.FC = () => {
 
           <Paper sx={{ padding: 2, flex: 1 }}>
             <DataGrid
-              getRowId={(row) => row.ID.toString()}
+              getRowId={(row) => row.id.toString()}
               onRowClick={(row) => {
                 setClickedRow(row.row as Log);
               }}
-              rows={data}
+              rows={logs || []}
               columns={[
                 {
-                  field: "CreatedAt",
+                  field: "createdAt",
                   headerName: "Date",
                   width: 200,
                   renderCell(params) {
@@ -105,7 +88,8 @@ const Logs: React.FC = () => {
                             width: 4,
                             height: 20,
                             borderRadius: 5,
-                            backgroundColor: findLevelColor(params.row.Level),
+                            backgroundColor: findStatusPalette(params.row.level)
+                              .text,
                           }}
                         />
                         <span>{formatDate(params.value)}</span>
@@ -113,7 +97,11 @@ const Logs: React.FC = () => {
                     );
                   },
                 },
-                { field: "Message", headerName: "Message", width: 150 },
+                {
+                  field: "message",
+                  headerName: "Message",
+                  width: 150,
+                },
               ]}
               pageSizeOptions={[10, 50, 100]}
               checkboxSelection={false}
@@ -150,16 +138,18 @@ const Logs: React.FC = () => {
                   }}
                 >
                   <Chip
-                    label={clickedRow.Level?.toUpperCase()}
+                    label={clickedRow.level?.toUpperCase()}
                     variant="filled"
                     sx={{
                       borderRadius: 0.5,
-                      backgroundColor: findLevelColor(clickedRow.Level),
+                      color: findStatusPalette(clickedRow.level).text,
+                      backgroundColor: findStatusPalette(clickedRow.level)
+                        .background,
                     }}
                   />
 
                   <Typography variant="body1">
-                    {formatDate(clickedRow.CreatedAt)}
+                    {formatDate(clickedRow.createdAt)}
                   </Typography>
                 </Box>
 
@@ -189,26 +179,26 @@ const Logs: React.FC = () => {
                 <Grid item xs={6}>
                   <Typography variant="body1">SOURCE</Typography>
                   <Typography variant="body2">
-                    {clickedRow.LogInformation?.Source || "N/A"}
+                    {clickedRow.logInformation?.source || "N/A"}
                   </Typography>
                 </Grid>
 
                 <Grid item xs={6}>
                   <Typography variant="body1">FUNCTION</Typography>
                   <Typography variant="body2">
-                    {clickedRow.LogInformation?.Function || "N/A"}
+                    {clickedRow.logInformation?.function || "N/A"}
                   </Typography>
                 </Grid>
               </Grid>
 
               <Box sx={{ marginTop: 2 }}>
                 {/* make the message in a code block format */}
-                {clickedRow.Message}
+                {clickedRow.message}
               </Box>
 
               <Box sx={{ marginTop: 2 }}>
                 <CopyBlock
-                  text={clickedRow.LogInformation?.StackTrace || "N/A"}
+                  text={clickedRow.logInformation?.stackTrace || "N/A"}
                   theme={nord}
                   codeBlock
                   language={"text"}
@@ -216,11 +206,11 @@ const Logs: React.FC = () => {
                 />
               </Box>
 
-              {clickedRow.LogInformation?.Solution && (
+              {clickedRow.logInformation?.solution && (
                 <Box sx={{ marginTop: 2 }}>
                   <Typography variant="h6">Solution</Typography>
                   <Typography variant="body1">
-                    {clickedRow.LogInformation?.Solution}
+                    {clickedRow.logInformation?.solution}
                   </Typography>
                 </Box>
               )}
@@ -237,7 +227,7 @@ const Logs: React.FC = () => {
                   }}
                 >
                   <Link href="https://google.com" target="_blank">
-                    {clickedRow.LogInformation?.ErrorType}
+                    {clickedRow.logInformation?.errorType}
                   </Link>
 
                   <ButtonGroup>
@@ -257,15 +247,15 @@ const Logs: React.FC = () => {
 
               <Box sx={{ marginTop: 4 }}>
                 <CommentField
-                  Username={user?.Username || ""}
-                  LogID={clickedRow?.ID?.toString()}
-                  Comments={clickedRow?.Comments || []}
+                  Username={user?.username || ""}
+                  LogID={clickedRow?.id?.toString()}
+                  Comments={clickedRow?.comments || []}
                 />
               </Box>
             </Box>
           </Drawer>
         </Box>
-      )}
+      </>
     </Box>
   );
 };

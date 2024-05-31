@@ -1,12 +1,9 @@
 export interface Monitor {
-  ID: number;
+  id: number;
 
-  Name: string;
-  Description: string;
+  name: string;
+  description: string;
 
-  Favorited: boolean;
-
-  CreatedAt: string;
-  UpdatedAt: string;
-  DeletedAt: string;
+  createdAt: string;
+  updatedAt: string;
 }

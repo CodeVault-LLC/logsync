@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getCurrentUser, loginUser, registerUser } from "../lib/users";
+import { getCurrentUser, loginUser, registerUser } from "../lib/fetch/users";
 import { User } from "../types/user";
 import Cookies from "universal-cookie";
 

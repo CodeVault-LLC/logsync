@@ -6,7 +6,7 @@ import {
   getProjectStatistics,
   getProjects,
   retrieveProjectKey,
-} from "../lib/monitors";
+} from "../lib/fetch/monitors";
 import { Monitor } from "../types/monitor";
 import { LogStatistic } from "../types/log";
 

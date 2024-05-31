@@ -30,9 +30,9 @@ export const CommentField: React.FC<CommentFieldProps> = ({
   const [editingCommentContent, setEditingCommentContent] = useState("");
 
   const { mutate } = useCreateComment({
-    Username,
-    Comment: comment,
-    LogId: LogID,
+    username: Username,
+    comment,
+    logId: LogID,
   });
 
   const onCommentSubmit = () => {
@@ -77,7 +77,7 @@ export const CommentField: React.FC<CommentFieldProps> = ({
       >
         {Comments.map((comment) => (
           <Paper
-            key={comment.ID}
+            key={comment.id}
             sx={{
               display: "flex",
               flexDirection: "row",
@@ -87,26 +87,26 @@ export const CommentField: React.FC<CommentFieldProps> = ({
               marginBottom: 2,
             }}
           >
-            <Avatar>{comment.Username[0]}</Avatar>
+            <Avatar>{comment.username[0]}</Avatar>
             <Box sx={{ flexGrow: 1 }}>
               <Typography variant="caption" color="textSecondary">
-                {formatDate(comment.CreatedAt)}
+                {formatDate(comment.createdAt)}
               </Typography>
 
               <Typography variant="body2" color="textSecondary">
-                {comment.Username}
+                {comment.username}
               </Typography>
               <div
                 className="comment-content"
-                dangerouslySetInnerHTML={{ __html: comment.Comment }}
+                dangerouslySetInnerHTML={{ __html: comment.comment }}
               ></div>
-              {comment.Username === Username && (
+              {comment.username === Username && (
                 <Box sx={{ display: "flex", gap: 1, marginTop: 1 }}>
                   <Tooltip title="Edit">
                     <IconButton
                       size="small"
                       onClick={() =>
-                        onEditComment(comment.ID.toString(), comment.Comment)
+                        onEditComment(comment.id.toString(), comment.comment)
                       }
                     >
                       <Edit fontSize="small" />
@@ -115,7 +115,7 @@ export const CommentField: React.FC<CommentFieldProps> = ({
                   <Tooltip title="Delete">
                     <IconButton
                       size="small"
-                      onClick={() => onDeleteComment(comment.ID.toString())}
+                      onClick={() => onDeleteComment(comment.id.toString())}
                     >
                       <Delete fontSize="small" />
                     </IconButton>
@@ -123,7 +123,7 @@ export const CommentField: React.FC<CommentFieldProps> = ({
                   <Tooltip title="Reply">
                     <IconButton
                       size="small"
-                      onClick={() => onReplyComment(comment.ID)}
+                      onClick={() => onReplyComment(comment.id)}
                     >
                       <Reply fontSize="small" />
                     </IconButton>

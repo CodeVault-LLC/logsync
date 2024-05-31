@@ -10,6 +10,8 @@ import { Sidebar } from "../components/Sidebar";
 import { useEffect, useState } from "react";
 import { DarkTheme, RefineThemes } from "../packages/mui";
 import { useCurrentUser } from "../hooks/useUser";
+import { LocalizationProvider } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
 export const RootPage: React.FC = () => {
   const path = useRouterState().location.pathname;
@@ -23,7 +25,7 @@ export const RootPage: React.FC = () => {
 
   useEffect(() => {
     if (
-      !user?.ID &&
+      !user?.id &&
       !isFetching &&
       !(path === "/login" || path === "/register")
     ) {
@@ -33,29 +35,31 @@ export const RootPage: React.FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ display: "flex" }}>
-        <CssBaseline />
-        {user?.ID && <Navbar open={open} toggleDrawer={toggleDrawer} />}
-        {user?.ID && <Sidebar open={open} toggleDrawer={toggleDrawer} />}
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Box sx={{ display: "flex" }}>
+          <CssBaseline />
+          {user?.id && <Navbar open={open} toggleDrawer={toggleDrawer} />}
+          {user?.id && <Sidebar open={open} toggleDrawer={toggleDrawer} />}
 
-        <Box
-          component="main"
-          sx={{
-            backgroundColor: (theme) =>
-              theme.palette.mode === "light"
-                ? theme.palette.grey[100]
-                : theme.palette.grey[900],
-            flexGrow: 1,
-            height: "100vh",
-            overflow: "auto",
-          }}
-        >
-          <Toolbar />
-          <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
-            <Outlet />
-          </Container>
+          <Box
+            component="main"
+            sx={{
+              backgroundColor: (theme) =>
+                theme.palette.mode === "light"
+                  ? theme.palette.grey[100]
+                  : theme.palette.grey[900],
+              flexGrow: 1,
+              height: "100vh",
+              overflow: "auto",
+            }}
+          >
+            <Toolbar />
+            <Container maxWidth="xl" sx={{ mt: 4, mb: 4 }}>
+              <Outlet />
+            </Container>
+          </Box>
         </Box>
-      </Box>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 };

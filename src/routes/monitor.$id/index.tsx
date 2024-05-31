@@ -1,6 +1,6 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useProjectStatistics } from "../../hooks/useMonitor";
-import { Grid, LinearProgress, Paper } from "@mui/material";
+import { Box, Grid, LinearProgress, Paper, Typography } from "@mui/material";
 import { MonitorStatistics } from "../../components/Statistics/MonitorStatistics";
 import { useMemo } from "react";
 
@@ -37,40 +37,83 @@ const MonitorId = () => {
     return data.map((stat) => stat.Date);
   }, [data]);
 
-  return (
-    <Grid container spacing={3}>
-      {isLoading && <LinearProgress />}
+  const Data = [
+    {
+      name: "Total Usage",
+      value: "158K logs",
+    },
+    {
+      name: "Total Usage",
+      value: "158K logs",
+    },
+    {
+      name: "Total Usage",
+      value: "158K logs",
+    },
+    {
+      name: "Total Usage",
+      value: "158K logs",
+    },
+  ];
 
-      {/* Chart */}
-      <Grid item xs={12} md={8} lg={9}>
-        <Paper
-          sx={{
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-            height: 320,
-            width: "100%",
-          }}
-        >
-          <MonitorStatistics data={chartData} dates={dates} />
-        </Paper>
+  return (
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Grid container spacing={3}>
+        {Data.map((data) => (
+          <Grid item xs={12} md={6} lg={3}>
+            <Paper
+              sx={{
+                p: 2,
+                display: "flex",
+                flexDirection: "column",
+                height: 120,
+                width: "100%",
+                justifyContent: "space-between",
+                alignContent: "center",
+              }}
+            >
+              <Typography variant="body1">{data.name}</Typography>
+              <Typography variant="h4">{data.value}</Typography>
+            </Paper>
+          </Grid>
+        ))}
       </Grid>
-      {/* Recent Deposits */}
-      <Grid item xs={12} md={4} lg={3}>
-        <Paper
-          sx={{
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-            height: 240,
-          }}
-        ></Paper>
+
+      <Grid container spacing={3}>
+        {isLoading && <LinearProgress />}
+        {/* Chart */}
+        <Grid item xs={12} md={8} lg={9}>
+          <Paper
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              height: 320,
+              width: "100%",
+            }}
+          >
+            <MonitorStatistics data={chartData} dates={dates} />
+          </Paper>
+        </Grid>
+        {/* Recent Deposits */}
+        <Grid item xs={12} md={4} lg={3}>
+          <Paper
+            sx={{
+              p: 2,
+              display: "flex",
+              flexDirection: "column",
+              height: 240,
+            }}
+          ></Paper>
+        </Grid>
+        {/* Recent Orders */}
+        <Grid item xs={12}>
+          <Paper
+            sx={{ p: 2, display: "flex", flexDirection: "column" }}
+          ></Paper>
+        </Grid>
       </Grid>
-      {/* Recent Orders */}
-      <Grid item xs={12}>
-        <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}></Paper>
-      </Grid>
-    </Grid>
+    </Box>
   );
 };
 

@@ -1,26 +1,26 @@
 import { CommentResponse } from "./comment";
 
 export interface Log {
-  ID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
-  Level: string;
-  Message: string;
-  AssignedTo: number;
+  id: number;
+  createdAt: string;
+  updatedAt: string;
+  level: string;
+  message: string;
+  assignedTo: number;
 
   // Additional fields
-  LogInformation: {
-    Source: string;
-    Tags: string[] | null;
-    Line: number;
-    Function: string;
-    Solution: string;
-    ErrorType: string;
-    StackTrace: string;
-    Context: string;
+  logInformation: {
+    source: string;
+    tags: string[] | null;
+    line: number;
+    function: string;
+    solution: string;
+    errorType: string;
+    stackTrace: string;
+    context: string;
   };
 
-  Comments: CommentResponse[];
+  comments: CommentResponse[];
 }
 
 export interface LogStatistic {

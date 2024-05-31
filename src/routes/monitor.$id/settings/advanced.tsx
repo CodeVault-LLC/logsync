@@ -46,9 +46,9 @@ const MonitorSettingsAdvanced = () => {
     if (!members) return [];
 
     return members.map((member) => ({
-      username: member.Member.Username,
-      email: member.Member.Email,
-      role: member.Role,
+      username: member.member.username,
+      email: member.member.email,
+      role: member.role,
     }));
   }, [members]);
 

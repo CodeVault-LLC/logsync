@@ -1,7 +1,7 @@
 import { Divider, IconButton, List, Toolbar, styled } from "@mui/material";
 import MuiDrawer from "@mui/material/Drawer";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems, monitorTabs, secondaryListItems } from "./listItems";
+import { mainListItems, monitorTabs } from "./listItems";
 import { useParams, useRouterState } from "@tanstack/react-router";
 
 const drawerWidth: number = 240;
@@ -66,7 +66,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
         )}
 
         <Divider sx={{ my: 1 }} />
-        {secondaryListItems}
       </List>
     </Drawer>
   );

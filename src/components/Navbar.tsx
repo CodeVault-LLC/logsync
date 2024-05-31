@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
           }}
         >
           <Typography component="h1" variant="h6" color="inherit">
-            LogiSync
+            LogSync
           </Typography>
         </Link>
         <IconButton
@@ -99,14 +99,14 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
             <List>
               {notifications?.map((notification) => (
                 <a
-                  href={notification.Link}
+                  href={notification.link}
                   style={{
                     color: "inherit",
                     textDecoration: "none",
                   }}
                 >
                   <ListItem
-                    key={notification.ID}
+                    key={notification.id}
                     sx={{
                       display: "flex",
                       flexDirection: "column",
@@ -120,8 +120,8 @@ export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
                       textDecoration: "none",
                     }}
                   >
-                    <Typography>{notification.Title}</Typography>
-                    <Typography>{notification.Message}</Typography>
+                    <Typography>{notification.title}</Typography>
+                    <Typography>{notification.message}</Typography>
                   </ListItem>
                 </a>
               ))}

@@ -1,16 +1,16 @@
 export interface Comment {
-  Username: string;
-  Comment: string;
-  LogId: string;
+  username: string;
+  comment: string;
+  logId: string;
 }
 
 export interface CommentResponse {
-  ID: number;
-  CreatedAt: string;
-  UpdatedAt: string;
+  id: string;
+  createdAt: string;
+  updatedAt: string;
 
-  Comment: string;
-  IsPinned: boolean;
+  comment: string;
+  isPinned: boolean;
 
-  Username: string;
+  username: string;
 }

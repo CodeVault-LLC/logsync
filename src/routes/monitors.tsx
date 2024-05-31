@@ -72,16 +72,16 @@ const Monitors = () => {
         {data &&
           data.length > 0 &&
           data.map((monitor) => (
-            <Grid item xs={12} md={6} lg={4} key={monitor.ID}>
+            <Grid item xs={12} md={6} lg={4} key={monitor.id}>
               <Card
                 sx={{
                   position: "relative",
                 }}
               >
                 <CardHeader
-                  title={monitor.Name}
+                  title={monitor.name}
                   avatar={
-                    <Avatar aria-label="recipe">{monitor.Name[0]}</Avatar>
+                    <Avatar aria-label="recipe">{monitor.name[0]}</Avatar>
                   }
                   action={
                     <>
@@ -144,11 +144,11 @@ const Monitors = () => {
                       </Menu>
                     </>
                   }
-                  subheader={formatMonitorDate(monitor.CreatedAt)}
+                  subheader={formatMonitorDate(monitor.createdAt)}
                 />
                 <CardContent>
                   <Typography variant="body2" color="text.secondary">
-                    {monitor.Description}
+                    {monitor.description}
                   </Typography>
                 </CardContent>
 
@@ -170,7 +170,7 @@ const Monitors = () => {
                   <Box sx={{ display: "flex", alignItems: "center" }}>
                     <Link
                       to="/monitor/$id"
-                      params={{ id: monitor.ID.toString() }}
+                      params={{ id: monitor.id.toString() }}
                     >
                       <IconButton aria-label="open">
                         <OpenInFull />
@@ -180,11 +180,8 @@ const Monitors = () => {
                     <Tooltip title="Save">
                       <IconButton
                         aria-label="Save"
-                        style={{
-                          color: monitor.Favorited ? "#f50057" : "inherit",
-                        }}
                         onClick={() => {
-                          setSelectedMonitor(monitor.ID);
+                          setSelectedMonitor(monitor.id);
                           favorite();
                         }}
                       >
