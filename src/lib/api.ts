@@ -4,8 +4,10 @@ import Cookies from "universal-cookie";
 const cookies = new Cookies();
 const jwt = cookies.get("jwt");
 
+const MAIN_URL = import.meta.env.DEV ? "http://localhost:8080/" : "https://logsync-api.onrender.com/";
+
 export const api = axios.create({
-  baseURL: "http://localhost:8080/",
+  baseURL: MAIN_URL,
   withCredentials: false,
 
   proxy: {
