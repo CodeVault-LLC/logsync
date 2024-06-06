@@ -26,8 +26,8 @@ export const CommentField: React.FC<CommentFieldProps> = ({
   Comments,
 }) => {
   const [comment, setComment] = useState("");
-  const [editingCommentId, setEditingCommentId] = useState<string | null>(null);
-  const [editingCommentContent, setEditingCommentContent] = useState("");
+  const [, setEditingCommentId] = useState<string | null>(null);
+  const [, setEditingCommentContent] = useState("");
 
   const { mutate } = useCreateComment({
     username: Username,
@@ -46,11 +46,11 @@ export const CommentField: React.FC<CommentFieldProps> = ({
   };
 
   const onDeleteComment = (commentId: string) => {
-    // Implement delete comment logic here
+    console.log("Delete comment with id: ", commentId);
   };
 
   const onReplyComment = (commentId: string) => {
-    // Implement reply comment logic here
+    console.log("Reply to comment with id: ", commentId);
   };
 
   return (
