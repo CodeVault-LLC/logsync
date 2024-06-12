@@ -1,5 +1,4 @@
-import { Settings } from "@mui/icons-material";
-import { Divider, Grid, Tab, Tabs, Box } from "@mui/material";
+import { Divider, Flex, Tabs } from "@mantine/core";
 import {
   Link,
   Outlet,
@@ -41,48 +40,44 @@ const MonitorAuthentication = () => {
   ];
 
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={3}>
-        <Box sx={{ borderRight: 1, borderColor: "divider" }}>
-          <Tabs
-            orientation="vertical"
-            variant="scrollable"
-            value={location.pathname}
-            sx={{
-              "& .MuiTab-root": {
-                color: "white",
-                textAlign: "left",
-                justifyContent: "flex-start",
-                padding: "10px 20px",
-              },
-            }}
-          >
-            {tabs.map((tab, index) => (
-              <>
-                {tab.type === "link" ? (
-                  <Tab
-                    key={index}
-                    label={tab.title}
-                    component={Link}
+    <Flex gap="md">
+      <Tabs
+        orientation="vertical"
+        variant="pills"
+        defaultValue={location.pathname}
+      >
+        <Tabs.List>
+          {tabs.map((tab, index) => (
+            <>
+              {tab.type === "link" ? (
+                <Tabs.Tab key={index} value={tab.link}>
+                  <Link
                     to={tab.link}
-                    value={tab.link}
-                    icon={<Settings />}
-                    iconPosition="start"
-                    sx={{ textTransform: "none", color: "white" }}
-                  />
-                ) : (
-                  <Divider key={index} />
-                )}
-              </>
-            ))}
-          </Tabs>
-        </Box>
-      </Grid>
-
-      <Grid item xs={12} md={9}>
+                    value={tab.title}
+                    style={{
+                      color: "inherit",
+                      textDecoration: "none",
+                    }}
+                  >
+                    {tab.title}
+                  </Link>
+                </Tabs.Tab>
+              ) : (
+                <Divider key={index} />
+              )}
+            </>
+          ))}
+        </Tabs.List>
+      </Tabs>
+      <div
+        style={{
+          height: "100%",
+          width: "100%",
+        }}
+      >
         <Outlet />
-      </Grid>
-    </Grid>
+      </div>
+    </Flex>
   );
 };
 

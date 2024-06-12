@@ -1,72 +1,69 @@
-import { Divider, IconButton, List, Toolbar, styled } from "@mui/material";
-import MuiDrawer from "@mui/material/Drawer";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import { mainListItems, monitorTabs } from "./listItems";
-import { useParams, useRouterState } from "@tanstack/react-router";
-
-const drawerWidth: number = 240;
-
-const Drawer = styled(MuiDrawer, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  "& .MuiDrawer-paper": {
-    position: "relative",
-    whiteSpace: "nowrap",
-    width: drawerWidth,
-    transition: theme.transitions.create("width", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-    boxSizing: "border-box",
-    ...(!open && {
-      overflowX: "hidden",
-      transition: theme.transitions.create("width", {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-      }),
-      width: theme.spacing(7),
-      [theme.breakpoints.up("sm")]: {
-        width: theme.spacing(9),
-      },
-    }),
-  },
-}));
+import classes from "../styles/navbar_nested.module.css";
+import { IconGauge, IconNotes } from "@tabler/icons-react";
+import { LinksGroup } from "./LinksGroup";
+import { Code, Group, Indicator, ScrollArea } from "@mantine/core";
+import pkg from "../../package.json";
 
 type SidebarProps = {
-  open: boolean;
-  toggleDrawer: () => void;
+  id: number;
 };
 
-export const Sidebar: React.FC<SidebarProps> = ({ open, toggleDrawer }) => {
-  const path = useRouterState().location.pathname;
-  const { id }: { id: number } = useParams({ strict: false });
+type Mockdata = {
+  label: string;
+  icon: React.FC;
+  initialLink?: string;
+  links?: { label: string; link: string }[];
+};
+
+export const Sidebar: React.FC<SidebarProps> = ({ id }) => {
+  const mockdata: Mockdata[] = [
+    { label: "Dashboard", icon: IconGauge, initialLink: "/" },
+    {
+      label: "Monitors",
+      icon: IconNotes,
+      initialLink: "/monitors",
+    },
+  ];
+
+  id
+    ? mockdata.push({
+        label: "Monitor",
+        icon: IconNotes,
+        links: [
+          {
+            label: "Monitor",
+            link: `/monitor/${id}`,
+          },
+          {
+            label: "Monitor Logs",
+            link: `/monitor/${id}/logs`,
+          },
+          {
+            label: "Monitor Settings",
+            link: `/monitor/${id}/settings/general`,
+          },
+        ],
+      })
+    : null;
+
+  const links = mockdata.map((item) => (
+    <LinksGroup {...item} key={item.label} />
+  ));
 
   return (
-    <Drawer variant="permanent" open={open}>
-      <Toolbar
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "flex-end",
-          px: [1],
-        }}
-      >
-        <IconButton onClick={toggleDrawer}>
-          <ChevronLeftIcon />
-        </IconButton>
-      </Toolbar>
-      <Divider />
-      <List component="nav">
-        {mainListItems}
-        {path.includes("/monitor/") && (
-          <>
-            <Divider sx={{ my: 1 }} />
-            {monitorTabs(id)}
-          </>
-        )}
+    <nav className={classes.navbar}>
+      <ScrollArea className={classes.links}>
+        <div className={classes.linksInner}>{links}</div>
+      </ScrollArea>
 
-        <Divider sx={{ my: 1 }} />
-      </List>
-    </Drawer>
+      <div className={classes.header}>
+        <Group justify="right">
+          <Group align="center" gap="sm">
+            <Indicator color="green" processing />
+            <Code fw={700}>v{pkg.version}</Code>
+          </Group>
+        </Group>
+      </div>
+    </nav>
   );
 };

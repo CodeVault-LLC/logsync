@@ -1,134 +1,208 @@
-import {
-  Toolbar,
-  IconButton,
-  Typography,
-  Badge,
-  styled,
-  Popper,
-  Paper,
-  List,
-  ListItem,
-} from "@mui/material";
-
-import MenuIcon from "@mui/icons-material/Menu";
-import NotificationsIcon from "@mui/icons-material/Notifications";
-
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import cx from "clsx";
 import { Link } from "@tanstack/react-router";
 import { useNotifications } from "../hooks/useNotifications";
+import {
+  IconLogout,
+  IconHeart,
+  IconStar,
+  IconMessage,
+  IconSettings,
+  IconSwitchHorizontal,
+} from "@tabler/icons-react";
+import {
+  ActionIcon,
+  AppShell,
+  Avatar,
+  Burger,
+  Button,
+  Flex,
+  Group,
+  Menu,
+  Text,
+  Tooltip,
+  UnstyledButton,
+  rem,
+  useMantineTheme,
+} from "@mantine/core";
 import { useState } from "react";
+import { useCurrentUser } from "../hooks/useUser";
+import classes from "../styles/navbar.module.css";
 
-const drawerWidth: number = 240;
 type NavbarProps = {
-  open: boolean;
-  toggleDrawer: () => void;
+  toggleMobile: () => void;
 };
 
-interface AppBarProps extends MuiAppBarProps {
-  open?: boolean;
-}
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})<AppBarProps>(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
-}));
-
-export const Navbar: React.FC<NavbarProps> = ({ open, toggleDrawer }) => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-
+export const Navbar: React.FC<NavbarProps> = ({ toggleMobile }) => {
   const { data: notifications } = useNotifications();
+  const theme = useMantineTheme();
+  const [userMenuOpened, setUserMenuOpened] = useState(false);
+  const { data } = useCurrentUser();
 
   return (
-    <AppBar position="absolute" open={open}>
-      <Toolbar
-        sx={{
-          pr: "24px",
-        }}
-      >
-        <IconButton
-          edge="start"
-          color="inherit"
-          aria-label="open drawer"
-          onClick={toggleDrawer}
-          sx={{
-            marginRight: "36px",
-            ...(open && { display: "none" }),
-          }}
-        >
-          <MenuIcon />
-        </IconButton>
-        <Link
-          to="/"
-          style={{
-            color: "inherit",
-            textDecoration: "none",
-            flexGrow: 1,
-            flexWrap: "nowrap",
-          }}
-        >
-          <Typography component="h1" variant="h6" color="inherit">
+    <AppShell.Header
+      style={{
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "0 20px",
+      }}
+    >
+      <Flex gap={20} align="center">
+        <Burger
+          onClick={toggleMobile}
+          aria-label="Toggle mobile navbar"
+          visibleFrom="sm"
+          hiddenFrom="md"
+        />
+        <Link to="/" style={{ textDecoration: "none", color: "inherit" }}>
+          <Text
+            size="xl"
+            style={{
+              fontWeight: 700,
+              color: theme.colors.blue[6],
+            }}
+          >
             LogSync
-          </Typography>
+          </Text>
         </Link>
-        <IconButton
-          color="inherit"
-          onClick={(event) => {
-            setAnchorEl(anchorEl ? null : event.currentTarget);
-          }}
-        >
-          <Badge badgeContent={notifications?.length || 0} color="secondary">
-            <NotificationsIcon />
-          </Badge>
-        </IconButton>
+      </Flex>
 
-        <Popper open={Boolean(anchorEl)} anchorEl={anchorEl}>
-          <Paper>
-            <List>
-              {notifications?.map((notification) => (
-                <a
-                  href={notification.link}
-                  style={{
-                    color: "inherit",
-                    textDecoration: "none",
-                  }}
-                >
-                  <ListItem
-                    key={notification.id}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      alignItems: "flex-start",
-                      width: 300,
-                      height: "auto",
-                      padding: 2,
-                      borderBottom: "1px solid #ccc",
+      <Flex gap={10} align="center">
+        {notifications?.length ? (
+          <Menu>
+            {notifications.map((notification) => (
+              <Menu.Item key={notification.id}>
+                {notification.message}
+              </Menu.Item>
+            ))}
+          </Menu>
+        ) : null}
 
-                      color: "inherit",
-                      textDecoration: "none",
-                    }}
-                  >
-                    <Typography>{notification.title}</Typography>
-                    <Typography>{notification.message}</Typography>
-                  </ListItem>
-                </a>
-              ))}
-            </List>
-          </Paper>
-        </Popper>
-      </Toolbar>
-    </AppBar>
+        {data?.id ? (
+          <Menu
+            width={260}
+            position="bottom-end"
+            transitionProps={{ transition: "pop-top-right" }}
+            onClose={() => setUserMenuOpened(false)}
+            onOpen={() => setUserMenuOpened(true)}
+            withinPortal
+          >
+            <Menu.Target>
+              <UnstyledButton
+                className={cx(classes.user, {
+                  [classes.userActive]: userMenuOpened,
+                })}
+              >
+                <Group gap={7}>
+                  <Tooltip label={data?.username} withArrow>
+                    <ActionIcon size={42} variant="default">
+                      <Avatar alt={data?.username} size="md" radius="xl" />
+                    </ActionIcon>
+                  </Tooltip>
+                </Group>
+              </UnstyledButton>
+            </Menu.Target>
+            <Menu.Dropdown>
+              <Menu.Item>{data?.username}</Menu.Item>
+              <Menu.Divider />
+              <Menu.Item
+                leftSection={
+                  <IconHeart
+                    style={{ width: rem(16), height: rem(16) }}
+                    color={
+                      (theme &&
+                        theme.colors &&
+                        theme.colors.red &&
+                        theme?.colors?.red[6]) ??
+                      "defaultColor"
+                    }
+                    stroke={1.5}
+                  />
+                }
+              >
+                Liked posts
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconStar
+                    style={{ width: rem(16), height: rem(16) }}
+                    color={
+                      theme &&
+                      theme.colors &&
+                      theme.colors.yellow &&
+                      theme.colors.yellow[6]
+                    }
+                    stroke={1.5}
+                  />
+                }
+              >
+                Saved posts
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconMessage
+                    style={{ width: rem(16), height: rem(16) }}
+                    color={
+                      theme &&
+                      theme.colors &&
+                      theme.colors.blue &&
+                      theme.colors.blue[6]
+                    }
+                    stroke={1.5}
+                  />
+                }
+              >
+                Your comments
+              </Menu.Item>
+
+              <Menu.Label>Settings</Menu.Label>
+              <Menu.Item
+                component="a"
+                href="/settings"
+                leftSection={
+                  <IconSettings
+                    style={{ width: rem(16), height: rem(16) }}
+                    stroke={1.5}
+                  />
+                }
+              >
+                Account settings
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconSwitchHorizontal
+                    style={{ width: rem(16), height: rem(16) }}
+                    stroke={1.5}
+                  />
+                }
+              >
+                Change account
+              </Menu.Item>
+              <Menu.Item
+                leftSection={
+                  <IconLogout
+                    style={{ width: rem(16), height: rem(16) }}
+                    stroke={1.5}
+                  />
+                }
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.reload();
+                }}
+              >
+                Logout
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        ) : (
+          <Link
+            to="/login"
+            style={{ textDecoration: "none", color: "inherit" }}
+          >
+            <Button>Login</Button>
+          </Link>
+        )}
+      </Flex>
+    </AppShell.Header>
   );
 };

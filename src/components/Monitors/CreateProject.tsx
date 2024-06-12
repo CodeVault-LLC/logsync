@@ -1,15 +1,11 @@
 import {
+  ActionIconGroup,
   Button,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  FormControl,
-  FormHelperText,
-  LinearProgress,
-  TextField,
-} from "@mui/material";
+  Flex,
+  Modal,
+  Text,
+  TextInput,
+} from "@mantine/core";
 import { useCreateProject } from "../../hooks/useMonitor";
 import { useEffect, useState } from "react";
 
@@ -39,69 +35,52 @@ export const CreateProject: React.FC<CreateProjectProps> = ({
   }, [isPending, createNew, isSuccess, setCreateNew]);
 
   return (
-    <Dialog
-      open={createNew}
+    <Modal
+      opened={createNew}
       onClose={() => setCreateNew(false)}
-      PaperProps={{
-        component: "form",
-        onSubmit: (event: React.FormEvent<HTMLFormElement>) => {
-          event.preventDefault();
-          mutate();
-        },
-      }}
+      title="Create Monitor"
     >
-      <DialogTitle>Create a new monitor</DialogTitle>
-      <DialogContent>
-        <DialogContentText>
-          When creating a new monitor, you will get a new list of monitors to
-          follow. By default, the monitor will be active.
-        </DialogContentText>
-        {isPending && <LinearProgress />}
-
-        <FormControl fullWidth>
-          <TextField
-            autoFocus
-            disabled={isPending}
-            required
-            margin="dense"
-            id="name"
-            name="name"
+      <Modal.Header>
+        <Flex justify="center" direction="column">
+          <Text
+            size="lg"
+            style={{
+              fontWeight: 700,
+            }}
+          >
+            Create Monitor
+          </Text>
+          <Text>
+            When creating a new monitor, you will get a new list of monitors to
+            follow. By default, the monitor will be active.
+          </Text>
+        </Flex>
+      </Modal.Header>
+      <Modal.Body>
+        <form
+          onSubmit={(event) => {
+            event.preventDefault();
+            mutate();
+          }}
+        >
+          <TextInput
             label="Name"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={(event) => setName(event.target.value)}
             value={name}
+            onChange={(event) => setName(event.currentTarget.value)}
           />
-          <FormHelperText>
-            The displayed monitor name available for everyone to see.
-          </FormHelperText>
-        </FormControl>
-
-        <FormControl fullWidth>
-          <TextField
-            margin="dense"
-            disabled={isPending}
-            id="description"
-            name="description"
+          <TextInput
             label="Description"
-            type="text"
-            fullWidth
-            variant="standard"
-            onChange={(event) => setDescription(event.target.value)}
             value={description}
+            onChange={(event) => setDescription(event.currentTarget.value)}
           />
-          <FormHelperText>
-            A helpful description for the monitor.
-          </FormHelperText>
-        </FormControl>
-      </DialogContent>
-      <DialogActions>
-        <Button onClick={() => setCreateNew(false)}>Cancel</Button>
-        <Button type="submit" disabled={isPending}>
-          Create
-        </Button>
-      </DialogActions>
-    </Dialog>
+
+          <ActionIconGroup mt="lg">
+            <Button type="submit" loading={isPending}>
+              Create
+            </Button>
+          </ActionIconGroup>
+        </form>
+      </Modal.Body>
+    </Modal>
   );
 };

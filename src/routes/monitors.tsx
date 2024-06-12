@@ -1,205 +1,53 @@
-import { Add, MoreVert, OpenInFull, Save, Share } from "@mui/icons-material";
-import {
-  Alert,
-  Avatar,
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Chip,
-  Divider,
-  Grid,
-  IconButton,
-  Menu,
-  MenuItem,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useFavoriteProject, useProjects } from "../hooks/useMonitor";
+import { useProjects } from "../hooks/useMonitor";
 import { ProtectedDisplay } from "../components/ProtectedDisplay";
 import { CreateProject } from "../components/Monitors/CreateProject";
-import { formatMonitorDate } from "../lib/data";
+import { Alert, Box, Button, Divider, Flex, Grid, Text } from "@mantine/core";
+import { IconPlus } from "@tabler/icons-react";
+import { ProjectCard } from "../components/ProjectCard";
 
 const Monitors = () => {
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
   const [createNew, setCreateNew] = useState(false);
-  const [selectedMonitor, setSelectedMonitor] = useState<number | null>(null);
-
-  const { mutate: favorite } = useFavoriteProject(selectedMonitor as number);
-
   const { data } = useProjects();
 
   return (
     <ProtectedDisplay>
-      <Box>
-        <Grid container spacing={3}>
-          <Grid item xs={4}>
-            <Typography variant="h4">Monitors</Typography>
-          </Grid>
+      <Flex my={2} justify="space-between">
+        <Text size="xl">Monitors</Text>
 
-          <Grid
-            item
-            xs={8}
-            sx={{ display: "flex", justifyContent: "flex-end" }}
-          >
-            <IconButton onClick={() => setCreateNew(true)}>
-              <Add />
-            </IconButton>
-          </Grid>
-        </Grid>
-      </Box>
+        <Button
+          title="Create a new monitor"
+          onClick={() => setCreateNew(true)}
+          variant="outline"
+        >
+          <IconPlus />
+        </Button>
+      </Flex>
 
       <CreateProject createNew={createNew} setCreateNew={setCreateNew} />
-      <Divider sx={{ my: 2 }} />
+      <Divider mt="lg" mb="lg" />
 
-      <Grid container spacing={3}>
+      <Box my={2}>
         {data && data.length === 0 && (
-          <Grid item xs={12}>
-            <Alert severity="info">No monitors found</Alert>
-          </Grid>
+          <Alert variant="default">No monitors found</Alert>
         )}
 
-        {data &&
-          data.length > 0 &&
-          data.map((monitor) => (
-            <Grid item xs={12} md={6} lg={4} key={monitor.id}>
-              <Card
-                sx={{
-                  position: "relative",
-                }}
-              >
-                <CardHeader
+        <Grid>
+          {data &&
+            data.length > 0 &&
+            data.map((monitor) => (
+              <Grid.Col span={4}>
+                <ProjectCard
+                  id={monitor.id}
+                  description={monitor.description}
+                  status={"active"}
                   title={monitor.name}
-                  avatar={
-                    <Avatar aria-label="recipe">{monitor.name[0]}</Avatar>
-                  }
-                  action={
-                    <>
-                      <Tooltip title="Options button">
-                        <IconButton
-                          onClick={handleClick}
-                          size="small"
-                          sx={{ ml: 2 }}
-                          aria-controls={open ? "options-menu" : undefined}
-                          aria-haspopup="true"
-                          aria-expanded={open ? "true" : undefined}
-                        >
-                          <MoreVert />
-                        </IconButton>
-                      </Tooltip>
-
-                      <Menu
-                        anchorEl={anchorEl}
-                        id="account-menu"
-                        open={open}
-                        onClose={handleClose}
-                        onClick={handleClose}
-                        PaperProps={{
-                          elevation: 0,
-                          sx: {
-                            overflow: "visible",
-                            filter: "drop-shadow(0px 2px 8px rgba(0,0,0,0.32))",
-                            mt: 1.5,
-                            "& .MuiAvatar-root": {
-                              width: 32,
-                              height: 32,
-                              ml: -0.5,
-                              mr: 1,
-                            },
-                            "&::before": {
-                              content: '""',
-                              display: "block",
-                              position: "absolute",
-                              top: 0,
-                              right: 14,
-                              width: 10,
-                              height: 10,
-                              bgcolor: "background.paper",
-                              transform: "translateY(-50%) rotate(45deg)",
-                              zIndex: 0,
-                            },
-                          },
-                        }}
-                        transformOrigin={{
-                          horizontal: "right",
-                          vertical: "top",
-                        }}
-                        anchorOrigin={{
-                          horizontal: "right",
-                          vertical: "bottom",
-                        }}
-                      >
-                        <MenuItem>Delete</MenuItem>
-                        <MenuItem>Edit</MenuItem>
-                      </Menu>
-                    </>
-                  }
-                  subheader={formatMonitorDate(monitor.createdAt)}
                 />
-                <CardContent>
-                  <Typography variant="body2" color="text.secondary">
-                    {monitor.description}
-                  </Typography>
-                </CardContent>
-
-                <Box>
-                  {["TAG 1", "TAG 2"].map((tag) => (
-                    <Chip key={tag} sx={{ mx: 1 }} label={tag} />
-                  ))}
-                </Box>
-
-                <CardActions
-                  disableSpacing
-                  sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: 2,
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center" }}>
-                    <Link
-                      to="/monitor/$id"
-                      params={{ id: monitor.id.toString() }}
-                    >
-                      <IconButton aria-label="open">
-                        <OpenInFull />
-                      </IconButton>
-                    </Link>
-
-                    <Tooltip title="Save">
-                      <IconButton
-                        aria-label="Save"
-                        onClick={() => {
-                          setSelectedMonitor(monitor.id);
-                          favorite();
-                        }}
-                      >
-                        <Save />
-                      </IconButton>
-                    </Tooltip>
-                  </Box>
-
-                  <Tooltip title="Share">
-                    <IconButton>
-                      <Share />
-                    </IconButton>
-                  </Tooltip>
-                </CardActions>
-              </Card>
-            </Grid>
-          ))}
-      </Grid>
+              </Grid.Col>
+            ))}
+        </Grid>
+      </Box>
     </ProtectedDisplay>
   );
 };

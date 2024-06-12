@@ -1,6 +1,6 @@
 import { Outlet, createFileRoute } from "@tanstack/react-router";
-import { Box } from "@mui/material";
 import { ProtectedDisplay } from "../components/ProtectedDisplay";
+import { Box } from "@mantine/core";
 
 const Monitor = () => {
   return (

@@ -6,18 +6,17 @@ import {
   useEditor,
 } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
-import { Box, IconButton, Tooltip, Paper } from "@mui/material";
-import {
-  FormatBold,
-  FormatItalic,
-  FormatUnderlined,
-  FormatListBulleted,
-  FormatListNumbered,
-  Code,
-  Title,
-  StrikethroughS,
-} from "@mui/icons-material";
 import "./editor.css";
+import {
+  IconBold,
+  IconCode,
+  IconHeading,
+  IconItalic,
+  IconList,
+  IconStrikethrough,
+  IconUnderline,
+} from "@tabler/icons-react";
+import { ActionIcon, Box, Paper, Tooltip } from "@mantine/core";
 
 declare module "@tiptap/core" {
   interface Commands<ReturnType> {
@@ -35,56 +34,56 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
   const actions = [
     {
       name: "bold",
-      icon: <FormatBold />,
+      icon: <IconBold />,
       action: () => editor.chain().focus().toggleBold().run(),
       isActive: () => editor.isActive("bold"),
       tooltip: "Bold (Ctrl+B)",
     },
     {
       name: "italic",
-      icon: <FormatItalic />,
+      icon: <IconItalic />,
       action: () => editor.chain().focus().toggleItalic().run(),
       isActive: () => editor.isActive("italic"),
       tooltip: "Italic (Ctrl+I)",
     },
     {
       name: "underline",
-      icon: <FormatUnderlined />,
+      icon: <IconUnderline />,
       action: () => editor.chain().focus().toggleStrike().run(),
       isActive: () => editor.isActive("underline"),
       tooltip: "Underline (Ctrl+U)",
     },
     {
       name: "strike",
-      icon: <StrikethroughS />,
+      icon: <IconStrikethrough />,
       action: () => editor.chain().focus().toggleStrike().run(),
       isActive: () => editor.isActive("strike"),
       tooltip: "Strikethrough (Ctrl+Shift+X)",
     },
     {
       name: "bulletList",
-      icon: <FormatListBulleted />,
+      icon: <IconList />,
       action: () => editor.chain().focus().toggleBulletList().run(),
       isActive: () => editor.isActive("bulletList"),
       tooltip: "Bullet List",
     },
     {
       name: "orderedList",
-      icon: <FormatListNumbered />,
+      icon: <IconList />,
       action: () => editor.chain().focus().toggleOrderedList().run(),
       isActive: () => editor.isActive("orderedList"),
       tooltip: "Ordered List",
     },
     {
       name: "code",
-      icon: <Code />,
+      icon: <IconCode />,
       action: () => editor.chain().focus().toggleCodeBlock().run(),
       isActive: () => editor.isActive("codeBlock"),
       tooltip: "Code Block",
     },
     {
       name: "heading",
-      icon: <Title />,
+      icon: <IconHeading />,
       action: () => editor.chain().focus().toggleHeading({ level: 1 }).run(),
       isActive: () => editor.isActive("heading", { level: 1 }),
       tooltip: "Heading 1",
@@ -93,7 +92,7 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
 
   return (
     <Box
-      sx={{
+      style={{
         display: "flex",
         flexDirection: "row",
         gap: 1,
@@ -102,14 +101,14 @@ const MenuBar = ({ editor }: { editor: Editor }) => {
       }}
     >
       {actions.map((action) => (
-        <Tooltip title={action.tooltip} key={action.name}>
-          <IconButton
+        <Tooltip label={action.tooltip} key={action.name}>
+          <ActionIcon
             onClick={action.action}
             color={action.isActive() ? "primary" : "default"}
             size="small"
           >
             {action.icon}
-          </IconButton>
+          </ActionIcon>
         </Tooltip>
       ))}
     </Box>
@@ -156,9 +155,9 @@ export const RichTextEditor = ({
   }
 
   return (
-    <Paper elevation={3} sx={{ borderRadius: "8px", overflow: "hidden" }}>
+    <Paper style={{ height: "100%", width: "100%" }}>
       <MenuBar editor={editor as Editor} />
-      <Box sx={{ paddingX: 1, height: "100%", width: "100%" }}>
+      <Box style={{ paddingX: 1, height: "100%", width: "100%" }}>
         <EditorContent editor={editor} />
       </Box>
     </Paper>
