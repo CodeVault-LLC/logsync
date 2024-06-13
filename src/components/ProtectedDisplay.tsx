@@ -1,7 +1,6 @@
-import { Email, Home, Lock } from "@mui/icons-material";
-import { Box, Button, LinearProgress, Typography } from "@mui/material";
 import { Link } from "@tanstack/react-router";
 import { useCurrentUser } from "../hooks/useUser";
+import { Button, ButtonGroup, Container, Loader, Text } from "@mantine/core";
 
 type ProtectedDisplayProps = {
   children: React.ReactNode;
@@ -13,44 +12,27 @@ export const ProtectedDisplay: React.FC<ProtectedDisplayProps> = ({
   const { data, isLoading } = useCurrentUser();
 
   if (isLoading) {
-    return <LinearProgress />;
+    return <Loader />;
   }
 
   if (!data && !isLoading) {
     return (
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
+      <Container size={420} my={40}>
+        <Text size="lg">You must be logged in to view this page.</Text>
+        <Text size="sm">
+          If you believe this is an error, please contact an administrator.
+        </Text>
 
-          borderRadius: 2,
-          boxShadow: 3,
-        }}
-      >
-        <Lock sx={{ fontSize: 60, color: "red" }} />
-        <Typography variant="h2" sx={{ marginBottom: 2 }}>
-          Access Denied
-        </Typography>
-        <Typography variant="h6" sx={{ marginBottom: 4, textAlign: "center" }}>
-          You must be logged in to view this page.
-          <br />
-          If something has gone wrong, please contact an administrator.
-        </Typography>
-        <Box sx={{ display: "flex", gap: 2 }}>
-          <a href="/mailto:admin@example.com">
-            <Button variant="contained" color="primary" startIcon={<Email />}>
-              Contact Admin
-            </Button>
-          </a>
+        <ButtonGroup>
           <Link to="/">
-            <Button variant="outlined" color="secondary" startIcon={<Home />}>
-              Go to Homepage
-            </Button>
+            <Button>Go to Homepage</Button>
           </Link>
-        </Box>
-      </Box>
+
+          <Link to="/login">
+            <Button>Sign In</Button>
+          </Link>
+        </ButtonGroup>
+      </Container>
     );
   }
   return <div>{children}</div>;

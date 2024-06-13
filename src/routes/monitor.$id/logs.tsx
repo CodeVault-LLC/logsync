@@ -1,36 +1,107 @@
-import {
-  Box,
-  ButtonGroup,
-  Chip,
-  Drawer,
-  Grid,
-  IconButton,
-  Link,
-  Paper,
-  Tab,
-  Tabs,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { createFileRoute, useParams } from "@tanstack/react-router";
-import { DataGrid } from "@mui/x-data-grid";
-import React, { useState } from "react";
+import { Link, createFileRoute, useParams } from "@tanstack/react-router";
+import React, { useMemo, useState } from "react";
 import { formatDate } from "../../lib/data";
 import { Log } from "../../types/log";
-import { Close, Download, GraphicEq, Search } from "@mui/icons-material";
 import { CopyBlock, nord } from "react-code-blocks";
 import { useCurrentUser } from "../../hooks/useUser";
 import { CommentField } from "../../components/CommentSection/CommentField";
 import { LogsFilter } from "../../components/Logs/LogFilter";
 import { findStatusPalette } from "../../packages/status";
+import {
+  ActionIcon,
+  ActionIconGroup,
+  Badge,
+  Box,
+  Drawer,
+  Flex,
+  Grid,
+  Paper,
+  Text,
+  Tooltip,
+} from "@mantine/core";
+import {
+  IconDownload,
+  IconFlagSearch,
+  IconGraph,
+  IconSearch,
+} from "@tabler/icons-react";
+import {
+  MRT_ColumnDef,
+  MantineReactTable,
+  useMantineReactTable,
+} from "mantine-react-table";
 
 const Logs: React.FC = () => {
   const { id }: { id: number } = useParams({ strict: false });
-  const [tab, setTab] = useState("filters");
-  const [clickedRow, setClickedRow] = useState({} as Log);
+  const [clickedRow, setClickedRow] = useState<Log | null>(null);
   const [logs, setLogs] = useState<Log[]>([]);
 
   const { data: user } = useCurrentUser();
+
+  const columns = useMemo<MRT_ColumnDef<Log>[]>(
+    () => [
+      {
+        accessorKey: "createdAt",
+        header: "CreatedAt",
+        Cell: ({ renderedCellValue, row }) => {
+          return (
+            <Box
+              style={{
+                display: "flex",
+                flexDirection: "row",
+                gap: 1,
+                alignItems: "center",
+              }}
+            >
+              <div
+                style={{
+                  width: 4,
+                  height: 20,
+                  borderRadius: 5,
+                  backgroundColor: findStatusPalette(row.original.level)
+                    .background,
+                }}
+              />
+              <span>{formatDate(renderedCellValue?.toString() || "")}</span>
+            </Box>
+          );
+        },
+
+        enableHiding: true,
+        enableSorting: true,
+      },
+      {
+        accessorKey: "message",
+        header: "Message",
+
+        enableHiding: true,
+        enableSorting: true,
+      },
+    ],
+    []
+  );
+
+  const table = useMantineReactTable({
+    columns,
+    data: logs, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+
+    // on row click, set the clicked row to the row data
+    enableRowActions: true,
+    renderRowActions: ({ row }) => (
+      <Flex style={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+        <Tooltip label="View log">
+          <ActionIcon
+            onClick={() => setClickedRow(row.original)}
+            variant="light"
+          >
+            <IconFlagSearch />
+          </ActionIcon>
+        </Tooltip>
+      </Flex>
+    ),
+    enableColumnOrdering: true, //enable a feature for all columns
+    enableGlobalFilter: false, //turn off a feature
+  });
 
   return (
     <Box>
@@ -38,90 +109,27 @@ const Logs: React.FC = () => {
         <LogsFilter monitorId={id} setLogs={setLogs} />
 
         <Box
-          sx={{
+          style={{
             display: "flex",
             justifyContent: "space-between",
             marginBottom: 2,
             gap: 4,
           }}
         >
-          <Paper sx={{ padding: 2 }}>
-            <Tabs
-              value={tab}
-              onChange={(_, value) => setTab(value)}
-              aria-label="monitor logs tabs"
-              defaultValue={"filters"}
-            >
-              <Tab label="Filters" id="filters" defaultChecked />
-              <Tab label="Saved Views" id="saved-views" />
-            </Tabs>
-
-            {tab === "filters" && (
-              <Box sx={{ display: "flex", flexDirection: "column" }}></Box>
-            )}
-          </Paper>
-
-          <Paper sx={{ padding: 2, flex: 1 }}>
-            <DataGrid
-              getRowId={(row) => row.id.toString()}
-              onRowClick={(row) => {
-                setClickedRow(row.row as Log);
-              }}
-              rows={logs || []}
-              columns={[
-                {
-                  field: "createdAt",
-                  headerName: "Date",
-                  width: 200,
-                  renderCell(params) {
-                    return (
-                      <Box
-                        sx={{
-                          display: "flex",
-                          flexDirection: "row",
-                          gap: 1,
-                          alignItems: "center",
-                        }}
-                      >
-                        <div
-                          style={{
-                            width: 4,
-                            height: 20,
-                            borderRadius: 5,
-                            backgroundColor: findStatusPalette(params.row.level)
-                              .text,
-                          }}
-                        />
-                        <span>{formatDate(params.value)}</span>
-                      </Box>
-                    );
-                  },
-                },
-                {
-                  field: "message",
-                  headerName: "Message",
-                  width: 150,
-                },
-              ]}
-              pageSizeOptions={[10, 50, 100]}
-              checkboxSelection={false}
-              disableRowSelectionOnClick={true}
-              rowHeight={38}
-            />
+          <Paper style={{ padding: 2, flex: 1 }}>
+            <MantineReactTable table={table} />
           </Paper>
 
           <Drawer
-            anchor="right"
-            ModalProps={{
-              keepMounted: true,
-            }}
-            open={Boolean(clickedRow && Object.keys(clickedRow).length > 0)}
-            onClose={() => setClickedRow({} as Log)}
-            sx={{ zIndex: 1475 }}
+            onClose={() => setClickedRow(null)}
+            opened={Boolean(clickedRow)}
+            position="right"
+            size="xl"
+            title={`Log Details - ${clickedRow?.id || ""}`}
           >
-            <Box sx={{ width: 800, padding: 2 }}>
+            <Box style={{ width: "100%", padding: 2 }}>
               <Box
-                sx={{
+                style={{
                   display: "flex",
                   flexDirection: "row",
                   gap: 2,
@@ -129,76 +137,60 @@ const Logs: React.FC = () => {
                   alignItems: "center",
                 }}
               >
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 2,
-                    alignItems: "center",
-                  }}
-                >
-                  <Chip
-                    label={clickedRow.level?.toUpperCase()}
+                <Flex gap="lg" justify="center" align="center">
+                  <Badge
                     variant="filled"
-                    sx={{
-                      borderRadius: 0.5,
-                      color: findStatusPalette(clickedRow.level).text,
-                      backgroundColor: findStatusPalette(clickedRow.level)
-                        .background,
+                    radius="sm"
+                    size="md"
+                    style={{
+                      color: findStatusPalette(clickedRow?.level ?? "").text,
+                      backgroundColor: findStatusPalette(
+                        clickedRow?.level ?? ""
+                      ).background,
                     }}
-                  />
+                  >
+                    {clickedRow?.level?.toUpperCase() || "N/A"}
+                  </Badge>
 
-                  <Typography variant="body1">
-                    {formatDate(clickedRow.createdAt)}
-                  </Typography>
-                </Box>
+                  <Text variant="body1">
+                    {formatDate(clickedRow?.createdAt || "")}
+                  </Text>
+                </Flex>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 2,
-                    alignItems: "center",
-                  }}
-                >
-                  <Tooltip title="Export log" arrow>
-                    <IconButton color="primary">
-                      <Download />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Tooltip title="Close" arrow>
-                    <IconButton onClick={() => setClickedRow({} as Log)}>
-                      <Close />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+                <Flex gap="sm" justify="center" align="center">
+                  <ActionIconGroup variant="filled">
+                    <Tooltip label="Export log">
+                      <ActionIcon size="lg" color="primary" variant="light">
+                        <IconDownload />
+                      </ActionIcon>
+                    </Tooltip>
+                  </ActionIconGroup>
+                </Flex>
               </Box>
 
-              <Grid container>
-                <Grid item xs={6}>
-                  <Typography variant="body1">SOURCE</Typography>
-                  <Typography variant="body2">
-                    {clickedRow.logInformation?.source || "N/A"}
-                  </Typography>
-                </Grid>
+              <Grid my="md">
+                <Grid.Col span={6}>
+                  <Text variant="text" size="lg">
+                    SOURCE
+                  </Text>
+                  <Text variant="text">
+                    {clickedRow?.logInformation?.source || "N/A"}
+                  </Text>
+                </Grid.Col>
 
-                <Grid item xs={6}>
-                  <Typography variant="body1">FUNCTION</Typography>
-                  <Typography variant="body2">
-                    {clickedRow.logInformation?.function || "N/A"}
-                  </Typography>
-                </Grid>
+                <Grid.Col span={6}>
+                  <Text variant="text" size="lg">
+                    FUNCTION
+                  </Text>
+                  <Text variant="text">
+                    {clickedRow?.logInformation?.function || "N/A"}
+                  </Text>
+                </Grid.Col>
               </Grid>
 
-              <Box sx={{ marginTop: 2 }}>
-                {/* make the message in a code block format */}
-                {clickedRow.message}
-              </Box>
-
-              <Box sx={{ marginTop: 2 }}>
+              <Box my="md">
                 <CopyBlock
-                  text={clickedRow.logInformation?.stackTrace || "N/A"}
+                  text={clickedRow?.logInformation?.stackTrace || "N/A"}
                   theme={nord}
                   codeBlock
                   language={"text"}
@@ -206,49 +198,52 @@ const Logs: React.FC = () => {
                 />
               </Box>
 
-              {clickedRow.logInformation?.solution && (
-                <Box sx={{ marginTop: 2 }}>
-                  <Typography variant="h6">Solution</Typography>
-                  <Typography variant="body1">
-                    {clickedRow.logInformation?.solution}
-                  </Typography>
+              {clickedRow?.logInformation?.solution && (
+                <Box my="md">
+                  <Text variant="text" size="lg">
+                    Solution
+                  </Text>
+                  <Text variant="text">
+                    {clickedRow?.logInformation?.solution}
+                  </Text>
                 </Box>
               )}
 
-              <Box sx={{ marginTop: 2 }}>
-                <Typography variant="h6">Error Kind</Typography>
+              <Box my="md">
+                <Text variant="text" size="lg">
+                  Error Kind
+                </Text>
 
-                <Box
-                  sx={{
-                    display: "flex",
-                    flexDirection: "row",
-                    gap: 2,
-                    alignItems: "center",
-                  }}
-                >
-                  <Link href="https://google.com" target="_blank">
-                    {clickedRow.logInformation?.errorType}
+                <Flex gap="xl" align="center">
+                  <Link
+                    href="https://google.com"
+                    target="_blank"
+                    style={{
+                      textDecoration: "none",
+                    }}
+                  >
+                    {clickedRow?.logInformation?.errorType}
                   </Link>
 
-                  <ButtonGroup>
-                    <Tooltip title="Search" arrow>
-                      <IconButton>
-                        <Search />
-                      </IconButton>
+                  <ActionIconGroup>
+                    <Tooltip label="Search">
+                      <ActionIcon variant="light">
+                        <IconSearch />
+                      </ActionIcon>
                     </Tooltip>
-                    <Tooltip title="Similar logs" arrow>
-                      <IconButton>
-                        <GraphicEq />
-                      </IconButton>
+                    <Tooltip label="Similar logs">
+                      <ActionIcon variant="light">
+                        <IconGraph />
+                      </ActionIcon>
                     </Tooltip>
-                  </ButtonGroup>
-                </Box>
+                  </ActionIconGroup>
+                </Flex>
               </Box>
 
-              <Box sx={{ marginTop: 4 }}>
+              <Box mt="xl">
                 <CommentField
                   Username={user?.username || ""}
-                  LogID={clickedRow?.id?.toString()}
+                  LogID={clickedRow?.id?.toString() || ""}
                   Comments={clickedRow?.comments || []}
                 />
               </Box>

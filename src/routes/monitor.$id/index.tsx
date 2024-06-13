@@ -1,8 +1,8 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
 import { useProjectStatistics } from "../../hooks/useMonitor";
-import { Box, Grid, LinearProgress, Paper, Typography } from "@mui/material";
 import { MonitorStatistics } from "../../components/Statistics/MonitorStatistics";
 import { useMemo } from "react";
+import { Box, Card, Grid, Loader, Paper, Text } from "@mantine/core";
 
 const MonitorId = () => {
   const { id }: { id: number } = useParams({ strict: false });
@@ -57,12 +57,12 @@ const MonitorId = () => {
   ];
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <Grid container spacing={3}>
+    <Box style={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Grid>
         {Data.map((data) => (
-          <Grid item xs={12} md={6} lg={3}>
-            <Paper
-              sx={{
+          <Grid.Col span={3}>
+            <Card
+              style={{
                 p: 2,
                 display: "flex",
                 flexDirection: "column",
@@ -72,19 +72,21 @@ const MonitorId = () => {
                 alignContent: "center",
               }}
             >
-              <Typography variant="body1">{data.name}</Typography>
-              <Typography variant="h4">{data.value}</Typography>
-            </Paper>
-          </Grid>
+              <Text variant="text">{data.name}</Text>
+              <Text variant="text" size="xl">
+                {data.value}
+              </Text>
+            </Card>
+          </Grid.Col>
         ))}
       </Grid>
 
-      <Grid container spacing={3}>
-        {isLoading && <LinearProgress />}
+      <Grid>
+        {isLoading && <Loader />}
         {/* Chart */}
-        <Grid item xs={12} md={8} lg={9}>
+        <Grid.Col span={12}>
           <Paper
-            sx={{
+            style={{
               p: 2,
               display: "flex",
               flexDirection: "column",
@@ -94,24 +96,18 @@ const MonitorId = () => {
           >
             <MonitorStatistics data={chartData} dates={dates} />
           </Paper>
-        </Grid>
+        </Grid.Col>
         {/* Recent Deposits */}
-        <Grid item xs={12} md={4} lg={3}>
+        <Grid.Col span={6}>
           <Paper
-            sx={{
+            style={{
               p: 2,
               display: "flex",
               flexDirection: "column",
               height: 240,
             }}
           ></Paper>
-        </Grid>
-        {/* Recent Orders */}
-        <Grid item xs={12}>
-          <Paper
-            sx={{ p: 2, display: "flex", flexDirection: "column" }}
-          ></Paper>
-        </Grid>
+        </Grid.Col>
       </Grid>
     </Box>
   );

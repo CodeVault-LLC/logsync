@@ -1,95 +1,78 @@
-import { createFileRoute } from "@tanstack/react-router";
-
-import * as React from "react";
-import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
-import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
-import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
-import Typography from "@mui/material/Typography";
+import { Link, createFileRoute } from "@tanstack/react-router";
 import { useLogin } from "../hooks/useUser";
+import {
+  Paper,
+  TextInput,
+  PasswordInput,
+  Checkbox,
+  Button,
+  Title,
+  Text,
+  Anchor,
+  Container,
+  Group,
+} from "@mantine/core";
+import classes from "../styles/login.module.css";
+import { useState } from "react";
 
 export default function SignIn() {
-  const [schema, setSchema] = React.useState(
+  const [schema, setSchema] = useState(
     {} as { username: string; password: string }
   );
 
   const { mutate } = useLogin(schema.username, schema.password);
 
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    mutate();
-  };
-
   return (
-    <>
-      <Avatar sx={{ m: 1, bgcolor: "secondary.main" }}>
-        <LockOutlinedIcon />
-      </Avatar>
-      <Typography component="h1" variant="h5">
-        Sign in
-      </Typography>
-      <Typography component="p" variant="body2">
-        By signing in, you agree to our terms and conditions. Please make sure
-        to read our privacy policy.
-      </Typography>
-      <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          id="username"
-          label="Username"
-          name="username"
-          autoComplete="username"
-          autoFocus
-          onChange={(e) => {
-            setSchema({ ...schema, username: e.target.value });
+    <Container size={420} my={40}>
+      <Title ta="center" className={classes.title}>
+        Welcome back!
+      </Title>
+      <Text c="dimmed" size="sm" ta="center" mt={5}>
+        Do not have an account yet?{" "}
+        <Link
+          to="/register"
+          style={{
+            textDecoration: "none",
+            color: "inherit",
           }}
-        />
-        <TextField
-          margin="normal"
-          required
-          fullWidth
-          name="password"
-          label="Password"
-          type="password"
-          id="password"
-          autoComplete="current-password"
-          onChange={(e) => {
-            setSchema({ ...schema, password: e.target.value });
-          }}
-        />
-        <FormControlLabel
-          control={<Checkbox value="remember" color="primary" />}
-          label="Remember me"
-        />
-        <Button
-          type="submit"
-          fullWidth
-          variant="contained"
-          sx={{ mt: 3, mb: 2 }}
         >
-          Sign In
+          <Anchor size="sm" component="button">
+            Create account
+          </Anchor>
+        </Link>
+      </Text>
+
+      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+        <TextInput
+          label="Username"
+          placeholder="username"
+          required
+          value={schema.username}
+          onChange={(e) =>
+            setSchema({ ...schema, username: e.currentTarget.value })
+          }
+        />
+        <PasswordInput
+          label="Password"
+          placeholder="Your password"
+          required
+          mt="md"
+          value={schema.password}
+          onChange={(e) =>
+            setSchema({ ...schema, password: e.currentTarget.value })
+          }
+        />
+        <Group justify="space-between" mt="lg">
+          <Checkbox label="Remember me" />
+          <Anchor component="button" size="sm">
+            Forgot password?
+          </Anchor>
+        </Group>
+        <Button fullWidth mt="xl" size="lg" onClick={() => mutate()}>
+          Sign in
         </Button>
-        <Grid container>
-          <Grid item xs>
-            <Link href="#" variant="body2">
-              Forgot password?
-            </Link>
-          </Grid>
-          <Grid item>
-            <Link href="/register" variant="body2">
-              {"Don't have an account? Sign Up"}
-            </Link>
-          </Grid>
-        </Grid>
-      </Box>
-    </>
+      </Paper>
+    </Container>
   );
 }
 

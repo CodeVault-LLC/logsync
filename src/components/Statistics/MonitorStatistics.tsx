@@ -1,4 +1,4 @@
-import { colors } from "@mui/material";
+import { useMantineTheme } from "@mantine/core";
 import Highcharts from "highcharts";
 import HighchartsReact from "highcharts-react-official";
 
@@ -11,10 +11,11 @@ export const MonitorStatistics: React.FC<MonitorStatisticsProps> = ({
   data,
   dates,
 }) => {
+  const theme = useMantineTheme();
   const options: Highcharts.Options = {
     accessibility: { enabled: false },
 
-    colors: [colors.blue[500]],
+    colors: [theme.colors.blue[500]],
     chart: {
       backgroundColor: undefined,
       width: undefined,
