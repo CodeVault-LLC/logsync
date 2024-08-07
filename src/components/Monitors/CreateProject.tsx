@@ -1,6 +1,7 @@
 import {
   ActionIconGroup,
   Button,
+  Divider,
   Flex,
   Modal,
   Text,
@@ -50,10 +51,10 @@ export const CreateProject: React.FC<CreateProjectProps> = ({
           >
             Create Monitor
           </Text>
-          <Text>
-            When creating a new monitor, you will get a new list of monitors to
-            follow. By default, the monitor will be active.
+          <Text size="sm" color="dimmed">
+            Fill out the form below to create a new monitor
           </Text>
+          <Divider mt="sm" />
         </Flex>
       </Modal.Header>
       <Modal.Body>
@@ -62,16 +63,19 @@ export const CreateProject: React.FC<CreateProjectProps> = ({
             event.preventDefault();
             mutate();
           }}
+          className="form"
         >
           <TextInput
             label="Name"
             value={name}
             onChange={(event) => setName(event.currentTarget.value)}
+            placeholder="Monitor name"
           />
           <TextInput
             label="Description"
             value={description}
             onChange={(event) => setDescription(event.currentTarget.value)}
+            placeholder="Monitor description"
           />
 
           <ActionIconGroup mt="lg">

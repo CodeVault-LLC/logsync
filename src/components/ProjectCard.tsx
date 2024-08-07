@@ -9,6 +9,7 @@ import {
 } from "@mantine/core";
 import { IconNotebook, IconShare } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
+import { formatDate } from "../lib/data";
 
 const StatusBadge = ({ status }: { status: string }) => {
   let color: MantineColor;
@@ -59,6 +60,7 @@ type ProjectCardProps = {
   id: number;
   title: string;
   description: string;
+  lastSeen: string;
   image?: string;
   status: "active" | "inactive";
 };
@@ -66,6 +68,7 @@ type ProjectCardProps = {
 export const ProjectCard: React.FC<ProjectCardProps> = ({
   id,
   description,
+  lastSeen,
   status,
   title,
 }) => {
@@ -75,7 +78,12 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         <Text fz="lg" fw={600} style={{ marginBottom: 10 }}>
           {title}
         </Text>
-        <StatusBadge status={status} />
+        <Flex gap={4} justify="space-evenly">
+          <Badge color="gray" variant="filled" radius="sm">
+            {formatDate(lastSeen)}
+          </Badge>
+          <StatusBadge status={status} />
+        </Flex>
       </Flex>
       <Text fz="sm" style={{ marginBottom: 10, minHeight: "5rem" }}>
         {description}

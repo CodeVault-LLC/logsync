@@ -2,10 +2,10 @@ import { Link, createFileRoute, useParams } from "@tanstack/react-router";
 import React, { useMemo, useState } from "react";
 import { formatDate } from "../../lib/data";
 import { Log } from "../../types/log";
-import { CopyBlock, nord } from "react-code-blocks";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import docco from "react-syntax-highlighter/dist/esm/styles/hljs/dark";
 import { useCurrentUser } from "../../hooks/useUser";
 import { CommentField } from "../../components/CommentSection/CommentField";
-import { LogsFilter } from "../../components/Logs/LogFilter";
 import { findStatusPalette } from "../../packages/status";
 import {
   ActionIcon,
@@ -30,13 +30,14 @@ import {
   MantineReactTable,
   useMantineReactTable,
 } from "mantine-react-table";
+import { useLogs } from "../../hooks/useLog";
 
 const Logs: React.FC = () => {
   const { id }: { id: number } = useParams({ strict: false });
   const [clickedRow, setClickedRow] = useState<Log | null>(null);
-  const [logs, setLogs] = useState<Log[]>([]);
 
   const { data: user } = useCurrentUser();
+  const { data: logs } = useLogs(id);
 
   const columns = useMemo<MRT_ColumnDef<Log>[]>(
     () => [
@@ -83,9 +84,8 @@ const Logs: React.FC = () => {
 
   const table = useMantineReactTable({
     columns,
-    data: logs, //must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+    data: logs ?? [],
 
-    // on row click, set the clicked row to the row data
     enableRowActions: true,
     renderRowActions: ({ row }) => (
       <Flex style={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
@@ -99,6 +99,7 @@ const Logs: React.FC = () => {
         </Tooltip>
       </Flex>
     ),
+
     enableColumnOrdering: true, //enable a feature for all columns
     enableGlobalFilter: false, //turn off a feature
   });
@@ -106,8 +107,6 @@ const Logs: React.FC = () => {
   return (
     <Box>
       <>
-        <LogsFilter monitorId={id} setLogs={setLogs} />
-
         <Box
           style={{
             display: "flex",
@@ -189,13 +188,9 @@ const Logs: React.FC = () => {
               </Grid>
 
               <Box my="md">
-                <CopyBlock
-                  text={clickedRow?.logInformation?.stackTrace || "N/A"}
-                  theme={nord}
-                  codeBlock
-                  language={"text"}
-                  showLineNumbers={false}
-                />
+                <SyntaxHighlighter language="javascript" style={docco}>
+                  {clickedRow?.logInformation?.stackTrace || "N/A"}
+                </SyntaxHighlighter>
               </Box>
 
               {clickedRow?.logInformation?.solution && (

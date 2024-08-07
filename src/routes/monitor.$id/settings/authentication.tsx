@@ -1,5 +1,6 @@
 import { createFileRoute, useParams } from "@tanstack/react-router";
-import { Code, CopyBlock, nord } from "react-code-blocks";
+import { Light as SyntaxHighlighter } from "react-syntax-highlighter";
+import docco from "react-syntax-highlighter/dist/esm/styles/hljs/dark";
 import { useMonitorKey } from "../../../hooks/useMonitor";
 import { Box, Button, Grid, Loader, Text } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
@@ -19,33 +20,32 @@ const MonitorSettingsAuthentication = () => {
 });`;
 
   return (
-      <Grid>
-        <Grid.Col span={4}>
-          <Box style={{ gap: 1, display: "flex", flexDirection: "column" }}>
-            <Text size="xl">Authentication</Text>
-            {isPending && <Loader />}
-            {data && data?.key ? (
-              <Code text={`${data.key}`} language="text" theme={nord} />
-            ) : (
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={() => mutate()}
-              >
-                <IconPlus /> Show API Key
-              </Button>
-            )}
+    <Grid>
+      <Grid.Col span={4}>
+        <Box style={{ gap: 1, display: "flex", flexDirection: "column" }}>
+          <Text size="xl">Authentication</Text>
+          {isPending && <Loader />}
+          {data && data?.key ? (
+            <SyntaxHighlighter language="javascript" style={docco}>
+              {data.key}
+            </SyntaxHighlighter>
+          ) : (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => mutate()}
+            >
+              <IconPlus /> Show API Key
+            </Button>
+          )}
 
-            <Text variant="h5">Example Usage</Text>
-            <CopyBlock
-              text={code}
-              language="javascript"
-              theme={nord}
-              showLineNumbers={false}
-            />
-          </Box>
-        </Grid.Col>
-      </Grid>
+          <Text variant="h5">Example Usage</Text>
+          <SyntaxHighlighter language="javascript" style={docco}>
+            {code}
+          </SyntaxHighlighter>
+        </Box>
+      </Grid.Col>
+    </Grid>
   );
 };
 

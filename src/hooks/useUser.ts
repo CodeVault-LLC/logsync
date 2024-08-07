@@ -1,5 +1,10 @@
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { getCurrentUser, loginUser, registerUser } from "../lib/fetch/users";
+import {
+  getCurrentUser,
+  loginUser,
+  logoutUser,
+  registerUser,
+} from "../lib/fetch/users";
 import { User } from "../types/user";
 import Cookies from "universal-cookie";
 
@@ -10,10 +15,10 @@ export const useCurrentUser = () => {
   });
 };
 
-export const useLogin = (username: string, password: string) => {
-  return useMutation<string>({
+export const useLogin = () => {
+  return useMutation<string, void, { username: string; password: string }>({
     mutationKey: ["login"],
-    mutationFn: () => loginUser(username, password),
+    mutationFn: (data) => loginUser(data.username, data.password),
 
     onSuccess: (data) => {
       const cookies = new Cookies();
@@ -30,16 +35,24 @@ export const useLogin = (username: string, password: string) => {
   });
 };
 
-export const useRegister = (
-  username: string,
-  password: string,
-  email: string
-) => {
-  return useMutation<User>({
+export const useRegister = () => {
+  return useMutation<User, void, FormData>({
     mutationKey: ["register"],
-    mutationFn: () => registerUser(username, password, email),
+    mutationFn: (formData) => registerUser(formData),
 
     onSuccess: () => {
+      window.location.href = "/login";
+    },
+  });
+};
+
+export const useLogout = () => {
+  return useMutation<void>({
+    mutationKey: ["logout"],
+    mutationFn: () => logoutUser(),
+    onSuccess: () => {
+      const cookies = new Cookies();
+      cookies.remove("jwt", { path: "/" });
       window.location.href = "/login";
     },
   });

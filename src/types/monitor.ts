@@ -6,4 +6,5 @@ export interface Monitor {
 
   createdAt: string;
   updatedAt: string;
+  lastSeen: string;
 }

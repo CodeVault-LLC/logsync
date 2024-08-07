@@ -17,15 +17,22 @@ export const getCurrentUser = async () => {
 
 export const loginUser = async (username: string, password: string) => {
   const responses = await api.post("/users/login", { username, password });
-  console.log(responses.data);
   return responses.data;
 };
 
-export const registerUser = async (
-  username: string,
-  password: string,
-  email: string
-) => {
-  const responses = await api.post("/users", { username, password, email });
-  return responses.data;
+export const registerUser = async (formData: FormData) => {
+  const response = await api.post("/users", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+  return response.data;
 };
+
+export const logoutUser = async () => {
+  const response = await api.post("/users/logout");
+  return response.data;
+};
+
+export const DEFAULT_USER_AVATAR_URL = (userId: number) =>
+  api.defaults.baseURL + "/users/avatar/" + userId;

@@ -11,16 +11,28 @@ import {
   Anchor,
   Container,
   Group,
+  Loader,
 } from "@mantine/core";
 import classes from "../styles/login.module.css";
 import { useState } from "react";
 
 export default function SignIn() {
-  const [schema, setSchema] = useState(
-    {} as { username: string; password: string }
-  );
+  const [schema, setSchema] = useState({ username: "", password: "" });
+  const { mutate, isPending } = useLogin();
 
-  const { mutate } = useLogin(schema.username, schema.password);
+  const handleSubmit = () => {
+    if (schema.username && schema.password) {
+      mutate({ username: schema.username, password: schema.password });
+    } else {
+      console.error("Both fields are required");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      handleSubmit();
+    }
+  };
 
   return (
     <Container size={420} my={40}>
@@ -42,7 +54,14 @@ export default function SignIn() {
         </Link>
       </Text>
 
-      <Paper withBorder shadow="md" p={30} mt={30} radius="md">
+      <Paper
+        withBorder
+        shadow="md"
+        p={30}
+        mt={30}
+        radius="md"
+        onKeyDown={handleKeyDown}
+      >
         <TextInput
           label="Username"
           placeholder="username"
@@ -68,8 +87,14 @@ export default function SignIn() {
             Forgot password?
           </Anchor>
         </Group>
-        <Button fullWidth mt="xl" size="lg" onClick={() => mutate()}>
-          Sign in
+        <Button
+          fullWidth
+          mt="xl"
+          size="md"
+          onClick={handleSubmit}
+          disabled={isPending}
+        >
+          {isPending ? <Loader size={"sm"} /> : "Sign in"}
         </Button>
       </Paper>
     </Container>

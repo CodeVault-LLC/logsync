@@ -25,8 +25,9 @@ import {
   useMantineTheme,
 } from "@mantine/core";
 import { useState } from "react";
-import { useCurrentUser } from "../hooks/useUser";
+import { useCurrentUser, useLogout } from "../hooks/useUser";
 import classes from "../styles/navbar.module.css";
+import { DEFAULT_USER_AVATAR_URL } from "../lib/fetch/users";
 
 type NavbarProps = {
   toggleMobile: () => void;
@@ -37,6 +38,7 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleMobile }) => {
   const theme = useMantineTheme();
   const [userMenuOpened, setUserMenuOpened] = useState(false);
   const { data } = useCurrentUser();
+  const { mutate: logout } = useLogout();
 
   return (
     <AppShell.Header
@@ -96,7 +98,12 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleMobile }) => {
                 <Group gap={7}>
                   <Tooltip label={data?.username} withArrow>
                     <ActionIcon size={42} variant="default">
-                      <Avatar alt={data?.username} size="md" radius="xl" />
+                      <Avatar
+                        src={DEFAULT_USER_AVATAR_URL(data?.id ?? 0)}
+                        alt={data?.username}
+                        size="lg"
+                        radius="xl"
+                      />
                     </ActionIcon>
                   </Tooltip>
                 </Group>
@@ -185,10 +192,7 @@ export const Navbar: React.FC<NavbarProps> = ({ toggleMobile }) => {
                     stroke={1.5}
                   />
                 }
-                onClick={() => {
-                  localStorage.removeItem("token");
-                  window.location.reload();
-                }}
+                onClick={() => logout()}
               >
                 Logout
               </Menu.Item>

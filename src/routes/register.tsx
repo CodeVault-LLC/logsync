@@ -14,14 +14,40 @@ import { useRegister } from "../hooks/useUser";
 import { useState } from "react";
 
 export default function Register() {
-  const [schema, setSchema] = useState(
-    {} as { username: string; password: string; email: string }
-  );
-  const { mutate } = useRegister(
-    schema.username,
-    schema.password,
-    schema.email
-  );
+  const [schema, setSchema] = useState({
+    username: "",
+    password: "",
+    email: "",
+  } as { username: string; password: string; email: string });
+  const [avatar, setAvatar] = useState<File | null>(null);
+  const { mutate } = useRegister();
+
+  const handleAvatarChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      setAvatar(file);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!avatar) {
+      console.error("Avatar is required");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("username", schema.username);
+    formData.append("password", schema.password);
+    formData.append("email", schema.email);
+    formData.append("avatar", avatar as File);
+
+    try {
+      const result = await mutate(formData);
+      console.log("User registered successfully:", result);
+    } catch (error) {
+      console.error("Error registering user:", error);
+    }
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -50,6 +76,7 @@ export default function Register() {
             setSchema({ ...schema, email: e.currentTarget.value })
           }
         />
+
         <PasswordInput
           label="Password"
           placeholder="Your password"
@@ -60,8 +87,17 @@ export default function Register() {
             setSchema({ ...schema, password: e.currentTarget.value });
           }}
         />
+
+        <TextInput
+          label="Avatar"
+          type="file"
+          mt="md"
+          size="md"
+          onChange={handleAvatarChange}
+        />
+
         <Checkbox label="Keep me logged in" mt="xl" size="md" />
-        <Button fullWidth mt="xl" size="md" onClick={() => mutate()}>
+        <Button fullWidth mt="xl" size="md" onClick={handleSubmit}>
           Register
         </Button>
 

@@ -41,6 +41,7 @@ const Monitors = () => {
                 <ProjectCard
                   id={monitor.id}
                   description={monitor.description}
+                  lastSeen={monitor.lastSeen}
                   status={"active"}
                   title={monitor.name}
                 />
