@@ -12,6 +12,7 @@
   "dependencies": {
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
+    "@hookform/resolvers": "^3.9.0",
     "@mantine/carousel": "^7.10.1",
     "@mantine/charts": "^7.10.1",
     "@mantine/code-highlight": "^7.10.1",
@@ -41,9 +42,11 @@
     "mantine-react-table": "^2.0.0-beta.4",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
+    "react-hook-form": "^7.52.2",
     "react-syntax-highlighter": "^15.5.0",
     "recharts": "^2.12.7",
-    "universal-cookie": "^7.1.4"
+    "universal-cookie": "^7.1.4",
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@tanstack/router-devtools": "^1.32.13",

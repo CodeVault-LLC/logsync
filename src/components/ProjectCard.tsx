@@ -6,6 +6,7 @@ import {
   Group,
   MantineColor,
   Text,
+  Tooltip,
 } from "@mantine/core";
 import { IconNotebook, IconShare } from "@tabler/icons-react";
 import { Link } from "@tanstack/react-router";
@@ -79,9 +80,14 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
           {title}
         </Text>
         <Flex gap={4} justify="space-evenly">
-          <Badge color="gray" variant="filled" radius="sm">
-            {formatDate(lastSeen)}
-          </Badge>
+          <Tooltip
+            label={`Last seen at ${formatDate(lastSeen)}`}
+            position="top"
+          >
+            <Badge color="gray" variant="filled" radius="sm">
+              {formatDate(lastSeen)}
+            </Badge>
+          </Tooltip>
           <StatusBadge status={status} />
         </Flex>
       </Flex>

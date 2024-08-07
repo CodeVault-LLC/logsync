@@ -4,9 +4,12 @@ import {
   loginUser,
   logoutUser,
   registerUser,
+  updateUser,
 } from "../lib/fetch/users";
 import { User } from "../types/user";
 import Cookies from "universal-cookie";
+import { z } from "zod";
+import { editUserSchema } from "../schemas/user";
 
 export const useCurrentUser = () => {
   return useQuery<User>({
@@ -55,5 +58,16 @@ export const useLogout = () => {
       cookies.remove("jwt", { path: "/" });
       window.location.href = "/login";
     },
+  });
+};
+
+export const useEditUser = () => {
+  return useMutation<
+    User,
+    void,
+    { id: number; data: z.infer<typeof editUserSchema> }
+  >({
+    mutationKey: ["editUser"],
+    mutationFn: ({ id, data }) => updateUser(id, data),
   });
 };

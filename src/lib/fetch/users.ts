@@ -1,4 +1,6 @@
+import { z } from "zod";
 import { api } from "../api";
+import { editUserSchema } from "../../schemas/user";
 
 export const getUsers = async () => {
   const responses = await api.get("/users");
@@ -31,6 +33,26 @@ export const registerUser = async (formData: FormData) => {
 
 export const logoutUser = async () => {
   const response = await api.post("/users/logout");
+  return response.data;
+};
+
+export const updateUser = async (
+  userId: number,
+  userData: z.infer<typeof editUserSchema>
+) => {
+  console.log(userData);
+
+  const response = await api.put(
+    "/users/" + userId,
+    {
+      ...userData,
+    },
+    {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    }
+  );
   return response.data;
 };
 

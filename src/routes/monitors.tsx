@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 import { useProjects } from "../hooks/useMonitor";
 import { ProtectedDisplay } from "../components/ProtectedDisplay";
-import { CreateProject } from "../components/Monitors/CreateProject";
+import { CreateMonitor } from "../components/Monitors/CreateMonitor";
 import { Alert, Box, Button, Divider, Flex, Grid, Text } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 import { ProjectCard } from "../components/ProjectCard";
@@ -25,7 +25,7 @@ const Monitors = () => {
         </Button>
       </Flex>
 
-      <CreateProject createNew={createNew} setCreateNew={setCreateNew} />
+      <CreateMonitor createNew={createNew} setCreateNew={setCreateNew} />
       <Divider mt="lg" mb="lg" />
 
       <Box my={2}>

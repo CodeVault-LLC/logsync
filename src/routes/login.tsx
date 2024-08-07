@@ -1,5 +1,7 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useLogin } from "../hooks/useUser";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Paper,
   TextInput,
@@ -12,25 +14,28 @@ import {
   Container,
   Group,
   Loader,
+  Notification,
 } from "@mantine/core";
 import classes from "../styles/login.module.css";
-import { useState } from "react";
+import { loginSchema } from "../schemas/user";
+import { z } from "zod";
 
 export default function SignIn() {
-  const [schema, setSchema] = useState({ username: "", password: "" });
-  const { mutate, isPending } = useLogin();
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleSubmit = () => {
-    if (schema.username && schema.password) {
-      mutate({ username: schema.username, password: schema.password });
-    } else {
-      console.error("Both fields are required");
-    }
-  };
+  const { mutate, isPending, isError, reset } = useLogin();
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === "Enter") {
-      handleSubmit();
+      handleSubmit((data) => {
+        mutate(data);
+      })();
     }
   };
 
@@ -62,24 +67,37 @@ export default function SignIn() {
         radius="md"
         onKeyDown={handleKeyDown}
       >
+        {isError && (
+          <Notification
+            title="Invalid credentials"
+            color="red"
+            withCloseButton
+            onClose={() => {
+              reset();
+            }}
+            mb={8}
+          >
+            <Text size="sm">
+              The username or password you provided is incorrect
+            </Text>
+          </Notification>
+        )}
+
         <TextInput
           label="Username"
           placeholder="username"
           required
-          value={schema.username}
-          onChange={(e) =>
-            setSchema({ ...schema, username: e.currentTarget.value })
-          }
+          {...register("username")}
+          error={errors.username?.message}
         />
+
         <PasswordInput
           label="Password"
           placeholder="Your password"
           required
           mt="md"
-          value={schema.password}
-          onChange={(e) =>
-            setSchema({ ...schema, password: e.currentTarget.value })
-          }
+          {...register("password")}
+          error={errors.password?.message}
         />
         <Group justify="space-between" mt="lg">
           <Checkbox label="Remember me" />
@@ -91,7 +109,9 @@ export default function SignIn() {
           fullWidth
           mt="xl"
           size="md"
-          onClick={handleSubmit}
+          onClick={handleSubmit((data) => {
+            mutate(data);
+          })}
           disabled={isPending}
         >
           {isPending ? <Loader size={"sm"} /> : "Sign in"}

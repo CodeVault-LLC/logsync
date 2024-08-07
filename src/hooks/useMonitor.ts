@@ -31,12 +31,13 @@ export const useProjectStatistics = (id: number) => {
   });
 };
 
-export const useCreateProject = (name: string, description: string) => {
+export const useCreateMonitor = () => {
   const queryClient = useQueryClient();
 
-  return useMutation<Monitor>({
+  return useMutation<Monitor, void, { name: string; description: string }>({
     mutationKey: ["createProject"],
-    mutationFn: () => createProject(name, description),
+    mutationFn: (data: { name: string; description: string }) =>
+      createProject(data.name, data.description),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["monitors"] });

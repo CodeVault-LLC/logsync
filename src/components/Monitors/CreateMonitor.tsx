@@ -7,33 +7,40 @@ import {
   Text,
   TextInput,
 } from "@mantine/core";
-import { useCreateProject } from "../../hooks/useMonitor";
-import { useEffect, useState } from "react";
+import { useCreateMonitor } from "../../hooks/useMonitor";
+import { useEffect } from "react";
+import { monitorSchema } from "../../schemas/monitor";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 type CreateProjectProps = {
   createNew: boolean;
   setCreateNew: (value: boolean) => void;
 };
 
-export const CreateProject: React.FC<CreateProjectProps> = ({
+export const CreateMonitor: React.FC<CreateProjectProps> = ({
   createNew,
   setCreateNew,
 }) => {
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-
-  const { mutate, isPending, isSuccess } = useCreateProject(name, description);
+  const {
+    handleSubmit,
+    register,
+    formState: { errors },
+  } = useForm<z.infer<typeof monitorSchema>>({
+    resolver: zodResolver(monitorSchema),
+  });
+  const { mutate, isPending, isError, reset, isSuccess } = useCreateMonitor();
 
   useEffect(() => {
-    if (!isPending && !createNew) {
-      setName("");
-      setDescription("");
-    }
-
     if (isSuccess) {
       setCreateNew(false);
     }
-  }, [isPending, createNew, isSuccess, setCreateNew]);
+
+    if (isError) {
+      reset();
+    }
+  }, [isError, isSuccess, reset, setCreateNew]);
 
   return (
     <Modal
@@ -59,23 +66,25 @@ export const CreateProject: React.FC<CreateProjectProps> = ({
       </Modal.Header>
       <Modal.Body>
         <form
-          onSubmit={(event) => {
-            event.preventDefault();
-            mutate();
-          }}
+          onSubmit={handleSubmit((data) => {
+            mutate(data);
+          })}
           className="form"
         >
           <TextInput
             label="Name"
-            value={name}
-            onChange={(event) => setName(event.currentTarget.value)}
             placeholder="Monitor name"
+            required
+            error={errors.name?.message}
+            {...register("name")}
           />
+
           <TextInput
             label="Description"
-            value={description}
-            onChange={(event) => setDescription(event.currentTarget.value)}
             placeholder="Monitor description"
+            required
+            error={errors.description?.message}
+            {...register("description")}
           />
 
           <ActionIconGroup mt="lg">
