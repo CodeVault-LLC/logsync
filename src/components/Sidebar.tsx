@@ -9,8 +9,9 @@ type SidebarProps = {
 };
 
 type Mockdata = {
-  label: string;
-  icon: React.FC;
+  divider?: boolean;
+  label?: string;
+  icon?: React.FC;
   initialLink?: string;
   links?: { label: string; link: string }[];
 };
@@ -26,24 +27,26 @@ export const Sidebar: React.FC<SidebarProps> = ({ id }) => {
   ];
 
   id
-    ? mockdata.push({
-        label: "Monitor",
-        icon: IconNotes,
-        links: [
-          {
-            label: "Monitor",
-            link: `/monitor/${id}`,
-          },
-          {
-            label: "Monitor Logs",
-            link: `/monitor/${id}/logs`,
-          },
-          {
-            label: "Monitor Settings",
-            link: `/monitor/${id}/settings/general`,
-          },
-        ],
-      })
+    ? mockdata.push(
+        {
+          divider: true,
+        },
+        {
+          label: "Monitor",
+          icon: IconNotes,
+          initialLink: `/monitors/${id}`,
+        },
+        {
+          label: "Logs",
+          icon: IconNotes,
+          initialLink: `/monitors/${id}/logs`,
+        },
+        {
+          label: "Settings",
+          icon: IconNotes,
+          initialLink: `/monitors/${id}/settings`,
+        }
+      )
     : null;
 
   const links = mockdata.map((item) => (

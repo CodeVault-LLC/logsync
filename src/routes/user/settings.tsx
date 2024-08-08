@@ -5,17 +5,19 @@ import {
   Loader,
   Paper,
   Tabs,
+  Text,
   TextInput,
   Title,
 } from "@mantine/core";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Navigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { editUserSchema } from "../../schemas/user";
 import { useCurrentUser, useEditUser } from "../../hooks/useUser";
+import { NotAuthenticated } from "../../components/Authenticate/NotAuthenticated";
 
 const Settings: React.FC = () => {
-  const { data, isPending } = useCurrentUser();
+  const { data, isPending, isError } = useCurrentUser();
   const {
     handleSubmit,
     register,
@@ -27,10 +29,17 @@ const Settings: React.FC = () => {
   const {
     mutate,
     isPending: isMutationPending,
-    isError,
     reset,
     isSuccess,
   } = useEditUser();
+
+  if (isError) {
+    return <NotAuthenticated />;
+  }
+
+  if (isPending) {
+    return <Loader />;
+  }
 
   return (
     <Tabs defaultValue="general" orientation="vertical">
@@ -74,6 +83,16 @@ const Settings: React.FC = () => {
               {isMutationPending ? <Loader size={"sm"} /> : "Save"}
             </Button>
           </form>
+        </Paper>
+
+        <Title order={2}>Danger</Title>
+        <Text color="red">
+          These actions inside are irreversible. We are not responsible for any
+          data loss or damage.
+        </Text>
+        <Divider m={4} />
+        <Paper>
+          <Button color="red">Delete Account</Button>
         </Paper>
       </Tabs.Panel>
     </Tabs>
